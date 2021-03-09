@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +18,8 @@ import com.shopme.common.entity.User;
 @Service
 @Transactional
 public class UserService {
+	
+	public static final int USERS_PER_PAGE = 4;	
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -26,6 +32,15 @@ public class UserService {
 	
 	public List<User> listAll() {
 		return (List<User>) userRepository.findAll();
+	}
+	
+	public Page<User> listByPage(int pageNumber, String sortField, String sortOrder) {
+		Sort sort = Sort.by(sortField);
+		// nếu sortOrder là asc -> sắp xếp tăng dần và ngược lại
+		sort = sortOrder.equals("asc") ? sort.ascending() : sort.descending();
+		// vì APIs pagination coi trang đầu tiên = 0 nhưng ở màn hình view ta sẽ hiển thị trang đầu tiên là 1 -> (pageNumber - 1)  
+		Pageable pageable = PageRequest.of(pageNumber-1, USERS_PER_PAGE, sort);
+		return userRepository.findAll(pageable);
 	}
 	
 	public List<Role> getListRole() {
