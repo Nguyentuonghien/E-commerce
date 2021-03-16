@@ -3,7 +3,11 @@ package com.shopme.admin.user;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -24,13 +28,6 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	@GetMapping("/users")
-	public String listAll(Model model) {
-		List<User> listUsers = userService.listAll();
-		model.addAttribute("listUsers", listUsers);
-		return "users";
-	}
-	
 	@GetMapping("/users/newUser")
 	public String newUser(Model model) {
 		List<Role> listRoles = userService.getListRole();
@@ -41,6 +38,44 @@ public class UserController {
 		model.addAttribute("listRoles", listRoles);
 		model.addAttribute("pageTitle", "Create New User");
 		return "user_form";
+	}
+	
+	@GetMapping("/users")
+	public String listFirstPage(Model model) {
+		return listUserByPage(1, model, "firstName", "asc", null);
+	}
+	
+	@GetMapping("/users/page/{pageNum}")
+	public String listUserByPage(@PathVariable("pageNum") int pageNumber, Model model,  
+			                     @Param("sortField") String sortField, 
+			                     @Param("sortOrder") String sortOrder, 
+			                     @Param("keyword") String keyword) {
+		System.out.println("Sort Field: "+sortField);
+		System.out.println("Sort Order: "+sortOrder);
+		
+		Page<User> pages = userService.listByPage(pageNumber, sortField, sortOrder, keyword);
+		List<User> listUsers = pages.getContent();
+		
+		long startCount = (pageNumber-1) * UserService.USERS_PER_PAGE + 1;
+		long endCount = startCount + UserService.USERS_PER_PAGE - 1;
+		
+		if(endCount > pages.getTotalElements()) {
+			endCount = pages.getTotalElements();
+		}
+		// sortOrder là asc đúng -> desc và ngược lại
+		String reverseSortOrder = sortOrder.equals("asc") ? "desc" : "asc";
+		
+		model.addAttribute("currentPage", pageNumber);
+		model.addAttribute("startCount", startCount);
+		model.addAttribute("endCount", endCount);
+		model.addAttribute("totalPages", pages.getTotalPages());
+		model.addAttribute("totalItems", pages.getTotalElements());
+		model.addAttribute("listUsers", listUsers);
+		model.addAttribute("sortField", sortField);
+		model.addAttribute("sortOrder", sortOrder);
+		model.addAttribute("reverseSortOrder", reverseSortOrder);
+		model.addAttribute("keyword", keyword);
+		return "users";
 	}
 	
 	@PostMapping("/users/saveUser")
@@ -64,7 +99,13 @@ public class UserController {
 			userService.save(user);
 		}
 		redirectAttributes.addFlashAttribute("message", "The user has been saved successfully!");
-		return "redirect:/users";
+		
+		return getRedirectURLToAffectedUser(user);
+	}
+
+	private String getRedirectURLToAffectedUser(User user) {
+		String firstPastOfEmail = user.getEmail().split("@")[0];		
+		return "redirect:/users/page/1?sortField=id&sortOrder=asc&keyword=" + firstPastOfEmail;
 	}
 	
 	@GetMapping("/users/edit/{id}")
@@ -102,6 +143,27 @@ public class UserController {
 		String message = "The user ID " + id + " has been " + status;
 		attributes.addFlashAttribute("message", message);
 		return "redirect:/users";
+	}
+	
+	@GetMapping("/users/export/csv")
+	public void exportToCSV(HttpServletResponse response) throws IOException {
+		List<User> listUsers = userService.listAll();
+		UserCsvExporter userCsvExporter = new UserCsvExporter();
+		userCsvExporter.exportCSV(listUsers, response);
+	}
+	
+	@GetMapping("/users/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+		List<User> users = userService.listAll();
+		UserExcelExporter excelExporter = new UserExcelExporter();
+		excelExporter.exportExcel(users, response);
+	}
+	
+	@GetMapping("/users/export/pdf")
+	public void exportToPdf(HttpServletResponse response) throws IOException {
+		List<User> users = userService.listAll();
+		UserPdfExporter userPdfExporter = new UserPdfExporter();
+		userPdfExporter.exportToPdf(users, response);
 	}
 	
 }

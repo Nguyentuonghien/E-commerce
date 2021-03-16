@@ -66,21 +66,47 @@
 	<div>
 		<h2>Manage Users</h2>
 		<a th:href="@{/users/newUser}">Create New User</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/users/export/csv}">Export to CSV</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/users/export/excel}">Export to Excel</a>
+		&nbsp;|&nbsp;
+		<a th:href="@{/users/export/pdf}">Export to PDF</a>
 	</div>
 	
 	<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
 	
 	<div>
+	     <form th:action="@{/users/page/1}" class="form-inline m-3">
+	          <input type="hidden" name="sortField" th:value="${sortField}" />
+	          <input type="hidden" name="sortOrder" th:value="${sortOrder}" />
+	          
+	          Filter:&nbsp;
+	          <input type="search" name="keyword" th:value="${keyword}" class="form-control" required="required" />
+	          &nbsp;&nbsp;
+	          <input type="submit" value="Search" class="btn btn-primary" />
+	          &nbsp;&nbsp;
+	          <input type="button" value="Clear" class="btn btn-secondary" onclick="clearFilter()" />
+	     </form>
+	</div>
+	
+	<div>
 	    <table class="table table-bordered table-striped table-hover table-reponsive-xl">
 	         <thead class="thead-dark">
 	             <tr>
-	                  <th>User ID</th>
+	                  <th th:replace="fragments :: column_link('id', 'User ID')"></th>
+	                  
 	                  <th>Photos</th>
-	                  <th>E-mail</th>
-	                  <th>First Name</th>
-	                  <th>Last Name</th>
+	                  
+	                  <th th:replace="fragments :: column_link('email', 'E-Mail')"></th>
+	                  
+	                  <th th:replace="fragments :: column_link('firstName', 'First Name')"></th>
+	                  
+	                  <th th:replace="fragments :: column_link('lastName', 'Last Name')"></th>
+	                 
 	                  <th>Roles</th>
-	                  <th>Enabled</th>
+	                  
+	                  <th th:replace="fragments :: column_link('enabled', 'Enabled')"></th>
 	                  <th></th>
 	             </tr>
 	         </thead>
@@ -118,7 +144,45 @@
 	    </table>
 	</div>
 	
-	<div class="modal fade text-center" id="confirmModal">
+	    <div class="text-center m-1" th:if="${totalItems > 0}">
+	        <span>Showing users # [[${startCount}]] to [[${endCount}]] of [[${totalItems}]]</span>
+	    </div>
+	    <div class="text-center m-1" th:unless="${totalItems > 0}">
+	        <span>No users found</span>
+	    </div>
+
+		<div th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center flex-wrap">
+					<li
+						th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(1, 'First')"></a>
+					</li>
+					<li
+						th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a
+						th:replace="fragments :: page_link(${currentPage - 1}, 'Previous')"></a>
+					</li>
+
+					<li
+						th:class="${currentPage != i ? 'page-item': 'page-item active'}"
+						th:each="i : ${#numbers.sequence(1, totalPages)}"><a
+						th:replace="fragments :: page_link(${i}, ${i})"></a></li>
+
+					<li
+						th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(${currentPage + 1}, 'Next')"></a>
+					</li>
+
+					<li
+						th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(${totalPages}, 'Last')"></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<div class="modal fade text-center" id="confirmModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -154,6 +218,11 @@
 			$("#confirmModal").modal();
 		});
 	});
+	
+	function clearFilter(){
+		window.location = "[[@{/users}]]"
+	};
+	
 </script>
 
 </body>
