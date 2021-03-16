@@ -31,15 +31,19 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 	
 	public List<User> listAll() {
-		return (List<User>) userRepository.findAll();
+		return (List<User>) userRepository.findAll(Sort.by("firstName").ascending());
 	}
 	
-	public Page<User> listByPage(int pageNumber, String sortField, String sortOrder) {
-		Sort sort = Sort.by(sortField);
+	public Page<User> listByPage(int pageNumber, String sortField, String sortOrder, String keyword) {
 		// nếu sortOrder là asc -> sắp xếp tăng dần và ngược lại
+		Sort sort = Sort.by(sortField);
 		sort = sortOrder.equals("asc") ? sort.ascending() : sort.descending();
 		// vì APIs pagination coi trang đầu tiên = 0 nhưng ở màn hình view ta sẽ hiển thị trang đầu tiên là 1 -> (pageNumber - 1)  
 		Pageable pageable = PageRequest.of(pageNumber-1, USERS_PER_PAGE, sort);
+		
+		if(keyword != null)	{
+			return userRepository.findAll(keyword, pageable);
+		}
 		return userRepository.findAll(pageable);
 	}
 	
