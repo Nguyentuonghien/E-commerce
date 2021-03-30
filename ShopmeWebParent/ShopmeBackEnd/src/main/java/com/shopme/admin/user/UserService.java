@@ -34,6 +34,10 @@ public class UserService {
 		return (List<User>) userRepository.findAll(Sort.by("firstName").ascending());
 	}
 	
+	public User getByEmail(String email) {
+		return userRepository.getUserByEmail(email);
+	}
+	
 	public Page<User> listByPage(int pageNumber, String sortField, String sortOrder, String keyword) {
 		// nếu sortOrder là asc -> sắp xếp tăng dần và ngược lại
 		Sort sort = Sort.by(sortField);
@@ -65,6 +69,22 @@ public class UserService {
 			encodePassword(user);
 		}
 		return userRepository.save(user);
+	}
+	
+	public User updateAccount(User userInForm) {
+		User userInDB = userRepository.findById(userInForm.getId()).get();
+		// update 4 field: pass, photos, first, lastName(email, roles k update)
+		// password và photo k rỗng -> đã thay đổi trên form -> update pass và photo mới cho user
+		if(!userInForm.getPassword().isEmpty()) {
+			userInDB.setPassword(userInForm.getPassword());
+			encodePassword(userInDB);
+		}
+		if(userInForm.getPhotos() != null) {
+			userInDB.setPhotos(userInForm.getPhotos());
+		}
+		userInDB.setFirstName(userInForm.getFirstName());
+		userInDB.setLastName(userInForm.getLastName());
+		return userRepository.save(userInDB);
 	}
 	
 	public void encodePassword(User user) {
@@ -110,6 +130,7 @@ public class UserService {
 	public void updateUserEnabledStatus(Integer id, boolean enabled) {
 		userRepository.updateEnabledStatus(id, enabled);
 	}
+	
 	
 }
 

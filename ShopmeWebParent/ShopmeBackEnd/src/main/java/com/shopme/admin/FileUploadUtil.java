@@ -7,9 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadUtil {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadUtil.class);
 	
 	public static void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
 		// lay ra duong dan den thu muc chua cac file uploaded(trong dự án thì uploadPath="user-photos/1")
@@ -38,12 +42,12 @@ public class FileUploadUtil {
 					try {
 						Files.delete(file);
 					} catch(IOException ex) {
-						System.out.println("Could not delete file: "+file);
+						LOGGER.error("Could not delete file: " + file);
 					}
 				}
 			});
 		} catch(IOException ex) {
-			System.out.println("Could not list directory: "+dirPath);
+			LOGGER.error("Could not list directory: " + dirPath);
 		}
  	}
 	
