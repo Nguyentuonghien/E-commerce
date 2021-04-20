@@ -129,10 +129,14 @@ public class User {
 		roles.add(role);
 	}
 
-	// @Transient: để thông báo rằng thuộc tính/ phương thức này không liên quan gì tới một cột nào dưới database
+	/**
+	 * @Transient: để thông báo rằng thuộc tính/ phương thức này không liên quan gì tới một cột nào dưới database
+	 *
+	 */
 	@Transient
 	public String getPhotosImagePath() {
-		// nếu id hoặc photos rỗng -> chọn ảnh mặc định cho user, còn khồn sẽ trả về path tới file ảnh
+		// nếu id hoặc photos rỗng -> chọn ảnh mặc định cho user, còn không sẽ trả về path tới file ảnh trong hệ thống
+		// VD: /user-photos/1/namhaminh.png
 		if(id == null || photos == null) {
 			return "/images/default-user.png";
 		}

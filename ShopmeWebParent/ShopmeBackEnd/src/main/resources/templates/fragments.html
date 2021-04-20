@@ -19,17 +19,21 @@
 
 <body>
 
-	<th th:fragment="column_link(fieldName, columnLabel, removeTag)" th:remove="${removeTag}">
+	<th th:fragment="column_link(moduleURL, fieldName, columnLabel, removeTag)" th:remove="${removeTag}">
 	    <a class="text-white" 
-	       th:href="@{'/users/page/' + ${currentPage} + '?sortField=' + ${fieldName} + '&sortOrder=' + ${sortField != fieldName ? sortOrder : reverseSortOrder}
-	                + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]] 
+	       th:href="@{${moduleURL} + '/page/' + ${currentPage} 
+	                            + '?sortField=' + ${fieldName} 
+	                            + '&sortDir=' + ${sortField != fieldName ? sortDir : reverseSortDir}
+	                            + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${columnLabel}]] 
 		</a> 
-		<span th:if="${sortField == fieldName}" th:class="${sortOrder == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
+		<span th:if="${sortField == fieldName}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}"></span>
 	</th>
 
-    <a th:fragment="page_link(pageNum, label)"
+    <a th:fragment="page_link(moduleURL, pageNum, label)"
 		class="page-link" 
-		th:href="@{'/users/page/' + ${pageNum} + '?sortField=' + ${sortField} + '&sortOrder=' + ${sortOrder} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${label}]]
+		th:href="@{${moduleURL} + '/page/' + ${pageNum} + '?sortField=' + ${sortField} 
+		                                                + '&sortDir=' + ${sortDir} 
+		                                                + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${label}]]
     </a>
 
     <div th:fragment="user_photos" th:remove="tag">
@@ -38,29 +42,92 @@
 			style="width: 100px" />	
 	</div>
 	
-	<div th:fragment="user_status" th:remove="tag">
-		<a th:if="${user.enabled == true}" class="fas fa-check-circle fa-2x icon-green" 
-			th:href="@{'/users/' + ${user.id} + '/enabled/false'}"
-			title="Disable this user"
-			></a>
+	<div th:fragment="status(enabled, entityName, entityURL)" th:remove="tag">
+		<a th:if="${enabled == true}" class="fas fa-check-circle fa-2x icon-green" 
+			th:href="@{${entityURL} + '/enabled/false'}"
+			th:title="'Disable this ' + ${entityName}">
+		</a>
 			
-		<a th:if="${user.enabled == false}" class="fas fa-circle fa-2x icon-dark" 
-			th:href="@{'/users/' + ${user.id} + '/enabled/true'}"
-			title="Enable this user"
-			></a>	
+		<a th:if="${enabled == false}" class="fas fa-circle fa-2x icon-dark" 
+			th:href="@{${entityURL} + '/enabled/true'}"
+			th:title="'Enable this ' + ${entityName}">
+		</a>	
 	</div>
 	
-	<div th:fragment="user_actions" th:remove="tag">
-		<a class="fas fa-edit fa-2x icon-green" th:href="@{'/users/edit/' + ${user.id}}"
-			title="Edit this user"></a>
-		&nbsp; 
+	<div th:fragment="edit(entityName, editURL)" th:remove="tag">
+		<a class="fas fa-edit fa-2x icon-green" th:href="@{${editURL}}"
+		   th:title="'Edit this ' + ${entityName}">
+		</a>
+	</div>		
+	
+	<div th:fragment="delete(entityName, entityId, deleteURL, visible)" th:remove="tag">
+		<th:block th:if="${visible}">		
 		<a class="fas fa-trash fa-2x icon-dark link-delete" 
-			th:href="@{'/users/delete/' + ${user.id}}"
-			th:userId="${user.id}"
-			title="Delete this user"></a>	
+			th:href="@{${deleteURL}}"
+			th:entityId="${entityId}"
+			th:title="'Delete this ' + ${entityName}"></a>
+		</th:block>	
 	</div>
 
-    <div th:fragment="footer" class="text-center m-3">
+	<div th:fragment="pagination(moduleURL, entityName)" th:remove="tag">
+		<div class="text-center m-1" th:if="${totalItems > 0}">
+			<span>Showing [[${entityName}]] # [[${startCount}]] to [[${endCount}]] of [[${totalItems}]]</span>
+		</div>
+
+		<div class="text-center m-1" th:unless="${totalItems > 0}">
+			<span>No [[${entityName}]] found</span>
+		</div>
+
+		<div th:if="${totalPages > 1}">
+			<nav>
+				<ul class="pagination justify-content-center flex-wrap">
+					<li
+						th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(${moduleURL}, 1, 'First')"></a>
+					</li>
+					<li
+						th:class="${currentPage > 1 ? 'page-item' : 'page-item disabled'}">
+						<a
+						th:replace="fragments :: page_link(${moduleURL}, ${currentPage - 1}, 'Previous')"></a>
+					</li>
+
+					<li
+						th:class="${currentPage != i ? 'page-item': 'page-item active'}"
+						th:each="i : ${#numbers.sequence(1, totalPages)}"><a
+						th:replace="fragments :: page_link(${moduleURL}, ${i}, ${i})"></a></li>
+
+					<li
+						th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(${moduleURL}, ${currentPage + 1}, 'Next')"></a>
+					</li>
+
+					<li
+						th:class="${currentPage < totalPages ? 'page-item' : 'page-item disabled'}">
+						<a th:replace="fragments :: page_link(${moduleURL}, ${totalPages}, 'Last')"></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+    <div th:fragment = "search_form_and_message(moduleURL)">
+	     <form th:action="@{${moduleURL}}" class="form-inline m-3">
+	          <input type="hidden" name="sortField" th:value="${sortField}" />
+	          <input type="hidden" name="sortDir" th:value="${sortDir}" />
+	          Filter:&nbsp;
+	          <input type="search" name="keyword" th:value="${keyword}" class="form-control" required="required" />
+	          &nbsp;&nbsp;
+	          <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+	          &nbsp;&nbsp;
+	          <button type="button" class="btn btn-secondary" onclick="clearFilter()">
+				  <i class="fas fa-eraser"></i>
+			</button>
+	     </form>
+	     
+	     <div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
+	</div>
+
+	<div th:fragment="footer" class="text-center m-3">
 		<p>Shopme Control Panel - Copyright &copy; Shopme</p>
 	</div>
 

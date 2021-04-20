@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "categories")
@@ -38,6 +39,68 @@ public class Category {
 
 	@OneToMany(mappedBy = "parent")
 	private Set<Category> children = new HashSet<>();
+
+	public Category() {
+	}
+
+	public Category(Integer id) {
+		this.id = id;
+	}
+
+	public Category(String name) {
+		this.name = name;
+		this.alias = name;
+		this.image = "default.png";
+	}
+
+	public Category(String name, Category parent) {
+		this(name);
+		this.parent = parent;
+	}
+
+	public Category(Integer id, String name, String alias) {
+		this.id = id;
+		this.name = name;
+		this.alias = alias;
+	}
+
+	/**
+	 * ta cần có một List<Category> được sao chép để tránh thực hiện thay đổi đối với cơ sở dữ liệu
+	 *
+	 */
+	 
+	public static Category copyFull(Category category) {
+		Category copyCategory = new Category();
+		copyCategory.setId(category.getId());
+		copyCategory.setName(category.getName());
+		copyCategory.setImage(category.getImage());
+		copyCategory.setAlias(category.getAlias());
+		copyCategory.setEnabled(category.isEnabled());
+		// hasChildren=true nếu category có 1 or nhiều hơn các children(để kiểm tra xem có delete được k?)
+		copyCategory.setHasChildren(category.getChildren().size() > 0);
+		return copyCategory;
+	}
+	
+	public static Category copyFull(Category category, String name) {
+		Category copyCategory = Category.copyFull(category);
+		// vì sub-category có thêm tiền tố "--" trước tên nên ta gán tên sub-category có dạng "--"+name
+		copyCategory.setName(name);
+		return copyCategory;
+	}
+	
+	public static Category copyIdAndName(Category category) {
+		Category copyCategory = new Category();
+		copyCategory.setId(category.getId());
+		copyCategory.setName(category.getName());
+		return copyCategory;
+	}
+
+	public static Category copyIdAndName(Integer id, String name) {
+		Category copyCategory = new Category();
+		copyCategory.setId(id);
+		copyCategory.setName(name);
+		return copyCategory;
+	}
 
 	public Integer getId() {
 		return id;
@@ -95,4 +158,38 @@ public class Category {
 		this.children = children;
 	}
 
+	/**
+	 * @Transient: để thông báo rằng thuộc tính/ phương thức này không liên quan gì tới một cột nào dưới database
+	 *
+	 */
+	@Transient
+	public String getImagePath() {
+		// nếu id của category = rỗng -> chọn ảnh mặc định cho category, còn không sẽ trả về path tới file ảnh trong hệ thống
+		// VD: /category-image/1/computer.png
+		if(this.id == null) {
+			return "/images/image-thumbnail.png";
+		}
+		return "/category-images/" + this.id + "/" + this.image;
+	}
+
+	@Transient
+	private boolean hasChildren;
+	
+	public boolean isHasChildren() {
+		return hasChildren;
+	}
+
+	public void setHasChildren(boolean hasChildren) {
+		this.hasChildren = hasChildren;
+	}
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+	
+	
+	
 }
+
+

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('Categories - Shopme Admin')"></head>
+
+<body>
+
+<div class="container-fluid">
+    <div th:replace="navigation :: menu"></div>
+    
+	<div>
+		<h2>Manage Categories</h2>
+		
+		<a th:href="@{/categories/newCategory}" class="fas fa-folder-plus fa-2x icon-dark mr-2"></a>
+		&nbsp;&nbsp;
+		<a th:href="@{/categories/export/csv}" class="fas fa-file-csv fa-2x icon-dark mr-2"></a>
+	</div>
+	
+	<div th:replace="fragments :: search_form_and_message('/categories/page/1')"></div>
+	
+	<div class="full-details">
+	    <table class="table table-bordered table-striped table-hover table-reponsive-xl">
+	         <thead class="thead-dark">
+	             <tr>
+	                 <th>ID</th>
+	                 <th>Category Image</th>
+	                 <th th:replace="fragments :: column_link('/categories', 'name', 'Category Name', 'none')" />
+	                 <th class="hideable-column">Alias</th>
+	                 <th>Enabled</th>
+	                 <th>Action</th>
+	             </tr>
+	         </thead>
+	         <tbody>
+	             <tr th:each="category : ${categories}">
+	                 <td>[[${category.id}]]</td>
+	                 <td>
+	                     <img th:src="@{${category.imagePath}}" style="width: 100px" class="img-fluid" />
+	                 </td>
+	                 <td>[[${category.name}]]</td>
+	                 <td class="hideable-column">[[${category.alias}]]</td>
+	                 <td>
+	                     <div th:replace="fragments :: status(${category.enabled}, 'category', '/categories/' + ${category.id})" />
+	                 </td>
+	                 <td>
+	                     <div th:replace="fragments :: edit('category', '/categories/editCategory/' + ${category.id})" />
+	                     &nbsp;
+						 <div th:replace="fragments :: delete('category', ${category.id}, '/categories/deleteCategory/' + ${category.id}, 
+						                       ${!category.hasChildren})">
+						 </div>
+	                 </td>
+	             </tr>
+	         </tbody>
+	    </table>
+	</div>
+	
+	<!-- for mobile -->
+	<div class="less-details">
+		<div th:each="category : ${categories}" class="row m-1">
+			<div class="col-4">
+				<img th:src="@{${category.imagePath}}" style="width: 100px" class="img-fluid" />		
+			</div>
+			<div class="col-8">
+				<div>[[${category.name}]]</div>
+				<div class="mt-2">
+					<div th:replace="fragments :: status(${category.enabled}, 'category', '/categories/' + ${category.id})" />
+					&nbsp; 			
+					<div th:replace="fragments :: edit('category', '/categories/editCategory/' + ${category.id})" />
+					&nbsp;
+				    <div th:replace="fragments :: delete('category', ${category.id}, '/categories/deleteCategory/' + ${category.id}, ${!category.hasChildren})"></div>
+				</div>
+			</div>
+			<div>&nbsp;</div>
+		</div>
+	</div>
+	
+	<div th:if="${keyword != null}" class="text-center">
+	     <span>Search result does not show categories in hierarchical form</span>
+	     <div th:replace="fragments :: pagination('/categories', 'categories')"></div>
+	</div>
+	
+	<th:block th:unless="${keyword != null}">
+	     <div th:replace="fragments :: pagination('/categories', 'top-level categories')"></div>
+	</th:block>
+	
+	<div th:replace="modal_fragments :: confirm_modal"></div>
+	
+	<div th:replace="fragments :: footer"></div>
+	
+</div>
+
+<script th:src="@{/js/common_list.js}"></script>
+<script type="text/javascript">
+
+    moduleURL = "[[@{/categories}]]";
+
+	$(document).ready(function() {
+		$(".link-delete").on("click", function(e) {
+			e.preventDefault();
+			showDeleteConfirmModal($(this), 'category');
+		});
+	});
+	
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+

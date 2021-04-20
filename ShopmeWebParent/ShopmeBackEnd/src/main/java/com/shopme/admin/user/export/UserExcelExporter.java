@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.shopme.admin.AbstractExporter;
 import com.shopme.common.entity.User;
 
 public class UserExcelExporter extends AbstractExporter {
@@ -26,7 +27,7 @@ public class UserExcelExporter extends AbstractExporter {
 	}
 
 	public void exportExcel(List<User> users, HttpServletResponse response) throws IOException {
-		super.setResponseHeader(response, "application/octet-stream", ".xlsx");
+		super.setResponseHeader(response, "application/octet-stream", ".xlsx", "users_");
 		writeHeaderLines();
 		writeDataLines(users);
 		// ghi nội dung của file Excel vào output stream của response, vì vậy clients(trình duyệt web) sẽ có thể tải xuống file Excel đã export
