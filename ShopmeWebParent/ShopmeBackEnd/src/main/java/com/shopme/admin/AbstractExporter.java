@@ -1,4 +1,4 @@
-package com.shopme.admin.user.export;
+package com.shopme.admin;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AbstractExporter {
 	
-	public void setResponseHeader(HttpServletResponse response, String contentType, String extension) throws IOException {
+	public void setResponseHeader(HttpServletResponse response, String contentType, String extension, String prefix) throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String timeFormat = dateFormat.format(new Date());
-		String fileName = "users_" + timeFormat + extension;
+		String fileName = prefix + timeFormat + extension;
 		response.setContentType(contentType);
 		
 		// Để gửi dữ liệu cho users dưới dạng file download, ta cần đặt tiêu đề cho response 

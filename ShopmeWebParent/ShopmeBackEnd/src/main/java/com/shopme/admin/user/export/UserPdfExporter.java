@@ -14,12 +14,13 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.shopme.admin.AbstractExporter;
 import com.shopme.common.entity.User;
 
 public class UserPdfExporter extends AbstractExporter {
 	
 	public void exportToPdf(List<User> users, HttpServletResponse response) throws IOException {
-		super.setResponseHeader(response, "application/pdf", ".pdf");
+		super.setResponseHeader(response, "application/pdf", ".pdf", "users_");
 		Document document = new Document(PageSize.A4);
 		// đọc nội dung của document và sau đó ghi nội dung vào response
 		PdfWriter.getInstance(document, response.getOutputStream());

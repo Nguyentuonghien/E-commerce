@@ -38,10 +38,10 @@ public class UserService {
 		return userRepository.getUserByEmail(email);
 	}
 	
-	public Page<User> listByPage(int pageNumber, String sortField, String sortOrder, String keyword) {
+	public Page<User> listByPage(int pageNumber, String sortField, String sortDir, String keyword) {
 		// nếu sortOrder là asc -> sắp xếp tăng dần và ngược lại
 		Sort sort = Sort.by(sortField);
-		sort = sortOrder.equals("asc") ? sort.ascending() : sort.descending();
+		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
 		// vì APIs pagination coi trang đầu tiên = 0 nhưng ở màn hình view ta sẽ hiển thị trang đầu tiên là 1 -> (pageNumber - 1)  
 		Pageable pageable = PageRequest.of(pageNumber-1, USERS_PER_PAGE, sort);
 		
@@ -92,7 +92,6 @@ public class UserService {
 		user.setPassword(encodedPassword);
 	}
 	
-	// check email khong duoc trung nhau(1 user chi co duy nhat 1 email ung vs no) 
 	public boolean isEmailUnique(Integer id, String email) {
 		User userByEmail = userRepository.getUserByEmail(email);
 		if(userByEmail == null) return true;  

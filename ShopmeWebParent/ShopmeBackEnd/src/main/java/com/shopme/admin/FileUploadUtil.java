@@ -33,7 +33,7 @@ public class FileUploadUtil {
 		}
 	}
 	
-	// clean directory
+	// clean directory: xóa các file ảnh đã tồn tại trong thư mục
 	public static void cleanDir(String dir) {
 		Path dirPath = Paths.get(dir);
 		try {
@@ -51,4 +51,14 @@ public class FileUploadUtil {
 		}
  	}
 	
+	public static void removeDir(String dir) {
+		// đầu tiên ta sẽ xóa các file ảnh trong thư mục rồi sau đó sẽ xóa thư mục đó
+		cleanDir(dir);
+		try {
+			Files.delete(Paths.get(dir));
+		} catch (IOException e) {
+			LOGGER.error("Could not remove directory: " + dir);
+		}
+		
+	}
 }

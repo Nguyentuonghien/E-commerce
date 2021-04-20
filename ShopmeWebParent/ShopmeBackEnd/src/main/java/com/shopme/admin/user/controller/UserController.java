@@ -53,12 +53,10 @@ public class UserController {
 	@GetMapping("/users/page/{pageNum}")
 	public String listUserByPage(@PathVariable("pageNum") int pageNumber, Model model,  
 			                     @Param("sortField") String sortField, 
-			                     @Param("sortOrder") String sortOrder, 
+			                     @Param("sortDir") String sortDir, 
 			                     @Param("keyword") String keyword) {
-		System.out.println("Sort Field: "+sortField);
-		System.out.println("Sort Order: "+sortOrder);
 		
-		Page<User> pages = userService.listByPage(pageNumber, sortField, sortOrder, keyword);
+		Page<User> pages = userService.listByPage(pageNumber, sortField, sortDir, keyword);
 		List<User> listUsers = pages.getContent();
 		
 		long startCount = (pageNumber-1) * UserService.USERS_PER_PAGE + 1;
@@ -68,7 +66,7 @@ public class UserController {
 			endCount = pages.getTotalElements();
 		}
 		// sortOrder là asc đúng -> desc và ngược lại
-		String reverseSortOrder = sortOrder.equals("asc") ? "desc" : "asc";
+		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
 		
 		model.addAttribute("currentPage", pageNumber);
 		model.addAttribute("startCount", startCount);
@@ -77,8 +75,8 @@ public class UserController {
 		model.addAttribute("totalItems", pages.getTotalElements());
 		model.addAttribute("listUsers", listUsers);
 		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortOrder", sortOrder);
-		model.addAttribute("reverseSortOrder", reverseSortOrder);
+		model.addAttribute("sortDir", sortDir);
+		model.addAttribute("reverseSortDir", reverseSortDir);
 		model.addAttribute("keyword", keyword);
 		return "users/users";
 	}
@@ -110,7 +108,7 @@ public class UserController {
 
 	private String getRedirectURLToAffectedUser(User user) {
 		String firstPastOfEmail = user.getEmail().split("@")[0];		
-		return "redirect:/users/page/1?sortField=id&sortOrder=asc&keyword=" + firstPastOfEmail;
+		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword=" + firstPastOfEmail;
 	}
 	
 	@GetMapping("/users/edit/{id}")
