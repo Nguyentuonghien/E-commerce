@@ -20,7 +20,7 @@ import com.shopme.common.entity.User;
  * getUsername(): trả về username đã dùng trong quá trình xác thực(lấy username của user)
  */
 
-public class ShopmeUserDetails implements UserDetails{
+public class ShopmeUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -85,4 +85,11 @@ public class ShopmeUserDetails implements UserDetails{
 		this.user.setLastName(lastName);
 	}	
 	
+	public boolean hasRole(String roleName) {
+		return user.hasRole(roleName);
+	}
+	
 }
+
+
+

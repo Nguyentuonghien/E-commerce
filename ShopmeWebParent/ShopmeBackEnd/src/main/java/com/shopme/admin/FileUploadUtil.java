@@ -16,7 +16,7 @@ public class FileUploadUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadUtil.class);
 	
 	public static void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
-		// lay ra duong dan den thu muc chua cac file uploaded(trong dự án thì uploadPath="user-photos/1")
+		// lay ra duong dan den thu muc chua cac file uploaded(trong dự án thì uploadPath="/user-photos/1")
 		Path uploadPath = Paths.get(uploadDir);
 		// kiem tra neu chua ton tai --> tao thu muc moi
 		if(!Files.exists(uploadPath)) {
@@ -24,7 +24,7 @@ public class FileUploadUtil {
 		}
 		// lưu file đã uploaded từ đối tượng MultipartFile tới 1 file trong file system
 		try (InputStream inputStream = multipartFile.getInputStream()) {
-			// nối path -> filePath="user-photos/1/fileName"
+			// nối path -> filePath = "/user-photos/1/tuong.png"
 			Path filePath = uploadPath.resolve(fileName);  
 			// sao chép dữ liệu từ inputstream và lưu nó vào ổ cứng
 			Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);

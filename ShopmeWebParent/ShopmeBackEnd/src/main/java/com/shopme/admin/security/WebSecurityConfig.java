@@ -20,9 +20,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	 * UserDetailsService: Có quyền truy cập vào password của user, trong bảng user có cột username và password, 
 	 *                     nơi ta lưu trữ hashed password(pass đã mã hóa) của user -> Spring Security cần bạn xác định hai bean 
 	 *                     để thiết lập và chạy authentication là UserDetailsService và PasswordEncoder
-	 * 
-	 *                     
-	 *
 	 */
 	
 	@Bean
@@ -55,6 +52,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		http.authorizeRequests()
 		    .antMatchers("/users/**").hasAuthority("Admin")
 		    .antMatchers("/categories/**", "/brands/**").hasAnyAuthority("Admin", "Editor")
+		    .antMatchers("/products/newProduct", "/products/deleteProduct/**").hasAnyAuthority("Admin", "Editor") 
+		    .antMatchers("/products/editProduct/**", "/products/saveProduct", "/products/check_unique")
+		              .hasAnyAuthority("Admin", "Editor", "Salesperson")
+		    .antMatchers("/products", "/products/", "/products/detail/**", "/products/page/**")
+		              .hasAnyAuthority("Admin", "Editor", "Salesperson", "Shipper")         
+		    .antMatchers("/products/**").hasAnyAuthority("Admin", "Editor")
 		    .anyRequest().authenticated()
 		    .and()
 		    .formLogin()
@@ -72,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		// Spring Security sẽ bỏ qua các URLs có dạng:
 		webSecurity.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**");
 	}
-
 	
 }
+
+

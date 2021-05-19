@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <div th:fragment="content" id="divProductDetails">
+        
+        <!-- hiển thị các details của product -->
+		<th:block th:each="detail, status : ${product.productDetails}">
+			<div class="form-inline" th:id="'divDetail' + ${status.index}">
+			    <input type="hidden" name="detailIDs" th:value="${detail.id}" />
+			    
+				<label class="m-3">Name:</label> 
+				<input type="text" class="form-control w-25" maxlength="255" th:value="${detail.name}" name="detailNames" /> 
+				<label class="m-3">Value:</label> 
+				<input type="text" class="form-control w-25" maxlength="255" th:value="${detail.value}" name="detailValues" />
+				<a name="linkRemoveDetail" class="btn fas fa-times-circle fa-2x icon-dark float-right" 
+				   title="Remove this detail">
+                </a>       
+			</div>
+		</th:block>
+		
+		<!-- thêm details khi ta ấn vào button Add More Detail -->
+		<!-- khi add thì id = 0 vì nó chưa có id trong DB -->
+		<div class="form-inline" th:id="'divDetail' + ${numberOfExistingDetail}">
+			<input type="hidden" name="detailIDs" value="0" />
+			<label class="m-3">Name:</label> 
+			<input type="text" class="form-control w-25" name="detailNames" maxlength="255" /> 
+			<label class="m-3">Value:</label> 
+			<input type="text" class="form-control w-25" name="detailValues" maxlength="255" />
+		</div>
+	</div>
+
+</body>
+</html>	
+

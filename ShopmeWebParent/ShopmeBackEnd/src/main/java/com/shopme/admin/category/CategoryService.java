@@ -28,7 +28,6 @@ import com.shopme.common.entity.Category;
  *
  */
 
-
 @Service
 @Transactional
 public class CategoryService {
@@ -37,6 +36,17 @@ public class CategoryService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	// trước khi save category ta check xem category đó có Parent không? nếu có -> lấy ra allParentIDs của parent đó
+	public Category save(Category category) {
+		Category parentCategory = category.getParent();
+		if (parentCategory != null) {
+			String allParentIDs = parentCategory.getAllParentIDs() == null ? "-" : parentCategory.getAllParentIDs(); // "-" or "-1-"
+			allParentIDs += String.valueOf(parentCategory.getId() + "-");   // "-1-" or "-1-5-"
+			category.setAllParentIDs(allParentIDs);
+		}
+		return categoryRepository.save(category);
+	}
 	
 	public List<Category> listByPage(CategoryPageInfo pageInfo, int pageNumber, String sortDir, String keyword) {
 		Sort sort = Sort.by("name");
@@ -154,10 +164,6 @@ public class CategoryService {
 		});
 		sortedChildren.addAll(children);
 		return sortedChildren;
-		}
-	
-	public Category save(Category category) {
-		return categoryRepository.save(category);
 	}
 	
 	public String checkUnique(Integer id, String name, String alias) {
