@@ -71,7 +71,7 @@ public class CategoryController {
 	}
 
 	@PostMapping("/categories/saveCategory")
-	public String saveCategory(Category category, @RequestParam("fileImage") MultipartFile multipartFile, Model model,
+	public String saveCategory(Category category, @RequestParam("fileImage") MultipartFile multipartFile,
 			RedirectAttributes attributes) throws IOException {
 		if (!multipartFile.isEmpty()) {
 			// lấy ra tên file từ đối tượng MultipartFile rồi gán cho category để lưu vào DB

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -32,12 +33,16 @@ public class Category {
 	private String image;
 
 	private boolean enabled;
-
+	
+	@Column(name = "all_parent_ids", length = 256, nullable = true)
+	private String allParentIDs;
+	
 	@OneToOne
 	@JoinColumn(name = "parent_id")
 	private Category parent;
 
 	@OneToMany(mappedBy = "parent")
+	@OrderBy("name asc")
 	private Set<Category> children = new HashSet<>();
 
 	public Category() {
@@ -157,6 +162,14 @@ public class Category {
 	public void setChildren(Set<Category> children) {
 		this.children = children;
 	}
+	
+	public String getAllParentIDs() {
+		return allParentIDs;
+	}
+
+	public void setAllParentIDs(String allParentIDs) {
+		this.allParentIDs = allParentIDs;
+	}
 
 	/**
 	 * @Transient: để thông báo rằng thuộc tính/ phương thức này không liên quan gì tới một cột nào dưới database
@@ -165,7 +178,7 @@ public class Category {
 	@Transient
 	public String getImagePath() {
 		// nếu id của category = rỗng -> chọn ảnh mặc định cho category, còn không sẽ trả về path tới file ảnh trong hệ thống
-		// VD: /category-image/1/computer.png
+		// VD: /category-images/1/computer.png
 		if(this.id == null) {
 			return "/images/image-thumbnail.png";
 		}
