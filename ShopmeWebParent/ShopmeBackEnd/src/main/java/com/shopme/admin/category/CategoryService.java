@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.shopme.common.entity.Category;
+import com.shopme.common.exception.CategoryNotFoundException;
 
 /**
  * Transaction: là 1 giao dịch (1 giao tác) bao gồm 1 loạt các hành động được phải được thực hiện thành công cùng nhau,
