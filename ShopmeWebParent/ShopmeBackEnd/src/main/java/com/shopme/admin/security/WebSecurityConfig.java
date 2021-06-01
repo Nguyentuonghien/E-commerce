@@ -50,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		    .antMatchers("/users/**").hasAuthority("Admin")
+		    .antMatchers("/users/**", "/settings/**", "/countries/**", "/states/**").hasAuthority("Admin")
 		    .antMatchers("/categories/**", "/brands/**").hasAnyAuthority("Admin", "Editor")
 		    .antMatchers("/products/newProduct", "/products/deleteProduct/**").hasAnyAuthority("Admin", "Editor") 
 		    .antMatchers("/products/editProduct/**", "/products/saveProduct", "/products/check_unique")
