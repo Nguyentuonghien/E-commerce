@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.shopme.common.entity.Customer;
 import com.shopme.common.entity.User;
 
 @Repository

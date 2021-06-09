@@ -101,8 +101,21 @@ function changeFormStateToNewCountry() {
     fieldCountryName.val("").focus();
 }
 
+function validateFormCountry() {
+     // nếu form không hợp lệ (chưa điền đầy đủ các field như Country Name, Code) -> báo lỗi
+    formCountry = document.getElementById("formCountry");
+    if (!formCountry.checkValidity()) {
+        formCountry.reportValidity();
+        return false;  
+    }
+    return true;
+}
+
 // dùng jquery để tạo ajax call server: call restful webservice
 function addCountry() {
+    
+    if (!validateFormCountry()) return;
+    
 	url = contextPath + "countries/save";
 	
 	// lấy ra Name và Code của Country từ form countries.html
@@ -139,6 +152,9 @@ function selectNewlyAddedCountry(countryId, countryCode, countryName) {
 }
 
 function updateCountry() {
+
+    if (!validateFormCountry()) return;
+    
     url = contextPath + "countries/save";
 	
 	// lấy ra Id, Name và Code của Country từ form countries.html
