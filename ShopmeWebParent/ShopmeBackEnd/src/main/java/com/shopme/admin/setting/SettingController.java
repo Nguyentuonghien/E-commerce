@@ -64,6 +64,22 @@ public class SettingController {
 		return "redirect:/settings";
 	}
 	
+	@PostMapping("/settings/save_mail_server")
+	public String saveMailServerSettings(HttpServletRequest servletRequest, RedirectAttributes attributes) {
+		List<Setting> mailServerSettings = settingService.getMailServerSettings();
+		updateSettingValuesFromForm(servletRequest, mailServerSettings);
+		attributes.addFlashAttribute("message", "Mail server settings have been saved.");
+		return "redirect:/settings";
+	}
+	
+	@PostMapping("/settings/save_mail_templates")
+	public String saveMailTemplateSettings(HttpServletRequest servletRequest, RedirectAttributes attributes) {
+		List<Setting> mailTemplateSettings = settingService.getMailTemplateSettings();
+		updateSettingValuesFromForm(servletRequest, mailTemplateSettings);
+		attributes.addFlashAttribute("message", "Mail template settings have been saved.");
+		return "redirect:/settings";
+	}
+	
 	private void saveCurrencySymbol(HttpServletRequest request, GeneralSettingBag generalSettingBag) {
 		// lấy ra currencyId từ form(general.html) thông qua HttpServletRequest
 		Integer currencyId = Integer.parseInt(request.getParameter("CURRENCY_ID"));
@@ -74,8 +90,9 @@ public class SettingController {
 			String symbol = currency.getSymbol();
 			generalSettingBag.updateCurrencySymbol(symbol);
 		}
-	}
+	}	
 	
+	// update các field của form mail_server.html
 	private void updateSettingValuesFromForm(HttpServletRequest request, List<Setting> listSettings) {
 		for (Setting setting : listSettings) {
 			// lấy ra giá trị của field ta muốn update trong form(general.html) thông qua key

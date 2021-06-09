@@ -21,9 +21,10 @@ public class SettingService {
 	
 	public GeneralSettingBag getGeneralSettings() {
 		List<Setting> settings = new ArrayList<>();
+		// lấy ra tất cả Setting có category là GENERAL or CURRENCY trong DB
+		// sau đó add chúng vào trong settings
 		List<Setting> generalSettings = settingRepository.findByCategory(SettingCategory.GENERAL);
 		List<Setting> currencySettings = settingRepository.findByCategory(SettingCategory.CURRENCY);
-		
 		settings.addAll(generalSettings);
 		settings.addAll(currencySettings);
 		
@@ -34,4 +35,14 @@ public class SettingService {
 		settingRepository.saveAll(settings);
 	}
 	
+	public List<Setting> getMailServerSettings() {
+		return settingRepository.findByCategory(SettingCategory.MAIL_SERVER);
+	}
+	
+	public List<Setting> getMailTemplateSettings() {
+		return settingRepository.findByCategory(SettingCategory.MAIL_TEMPLATES);
+	}
+	
 }
+
+

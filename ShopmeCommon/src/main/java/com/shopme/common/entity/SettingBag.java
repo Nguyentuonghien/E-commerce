@@ -19,6 +19,8 @@ public class SettingBag {
 	}
 	
 	public Setting getByKey(String key) {
+		// ta tìm kiếm vị trí xuất hiện đầu tiên của 1 phần tử với key truyền vào trong listSettings
+		// kết quả trả về index xuất hiện đầu tiên của phần tử đó trong listSettings -> lấy ra đối tượng Setting tương ứng với index đó
 		int index = listSettings.indexOf(new Setting(key));
 		if (index >= 0) {
 			return listSettings.get(index);
