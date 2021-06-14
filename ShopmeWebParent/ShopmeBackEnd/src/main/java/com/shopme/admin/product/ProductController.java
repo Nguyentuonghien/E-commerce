@@ -73,6 +73,7 @@ public class ProductController {
 		model.addAttribute("totalItems", page.getTotalElements());
 		model.addAttribute("totalPages", page.getTotalPages());
 		model.addAttribute("reverseSortDir", reverseSortDir);
+		model.addAttribute("moduleURL", "/products");
 		return "products/products";
 	}
 
@@ -105,11 +106,14 @@ public class ProductController {
 			     @RequestParam(name = "detailValues", required = false) String[] detailValues,
 			     @RequestParam(name = "imageIDs", required = false) String[] imageIDs, 
 			     @RequestParam(name = "imageNames", required = false) String[] imageNames, 
-			     @AuthenticationPrincipal ShopmeUserDetails loggedUser) throws IOException {		
-		if (loggedUser.hasRole("Salesperson")) {
-			productService.saveProductPrice(product);
-			attributes.addFlashAttribute("message", "The product has been saved successfully.");
-			return "redirect:/products";
+			     @AuthenticationPrincipal ShopmeUserDetails loggedUser) throws IOException {	
+		
+		if (!loggedUser.hasRole("Admin") && !loggedUser.hasRole("Editor")) {
+			if (loggedUser.hasRole("Salesperson")) {
+				productService.saveProductPrice(product);
+				attributes.addFlashAttribute("message", "The product has been saved successfully.");
+				return "redirect:/products";
+			}
 		}
 		
 		ProductSaveHelper.setMainImageName(mainImageMultipart, product);

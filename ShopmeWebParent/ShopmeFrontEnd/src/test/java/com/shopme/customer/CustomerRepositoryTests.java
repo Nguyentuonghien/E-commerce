@@ -138,7 +138,7 @@ public class CustomerRepositoryTests {
 	@Test
 	public void testEnableCustomer() {
 		Integer customerId = 1;
-		repo.enable(customerId);
+		repo.enableCustomer(customerId);
 		
 		Customer customer = repo.findById(customerId).get();
 		assertThat(customer.isEnabled()).isTrue();
