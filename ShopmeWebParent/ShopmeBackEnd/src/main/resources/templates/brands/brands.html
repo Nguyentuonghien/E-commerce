@@ -12,7 +12,7 @@
 		<a th:href="@{/brands/newBrand}" class="fas fa-folder-plus fa-2x icon-dark mr-2"></a>
 	</div>
 	
-	<div th:replace="fragments :: search_form_and_message('/brands/page/1')"></div>
+	<div th:replace="fragments :: search_form_and_message"></div>
 	
 	<div class="full-details">
 	    <table class="table table-bordered table-striped table-hover table-reponsive-xl">
@@ -20,7 +20,7 @@
 	             <tr>
 	                 <th>Brand ID</th>
 	                 <th>Logo</th>
-	                 <th th:replace="fragments :: column_link('/brands', 'name', 'Brand Name', 'none')" />
+	                 <th th:replace="fragments :: column_link('name', 'Brand Name', 'none')" />
 	                 <th>Categories</th>
 	                 <th>Action</th>
 	             </tr>
@@ -64,7 +64,7 @@
 		</div>	
 	</div>	
 	
-	<div th:replace="fragments :: pagination('/brands', 'brands')"></div>
+	<div th:replace="fragments :: pagination('brands')"></div>
 	
 	<div th:replace="modal_fragments :: confirm_modal"></div>
 	

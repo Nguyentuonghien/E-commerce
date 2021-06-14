@@ -2,11 +2,14 @@ package com.shopme.admin;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.shopme.admin.paging.PagingAndSortingArgumentResolver;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer{
@@ -32,7 +35,12 @@ public class MvcConfig implements WebMvcConfigurer{
 		String logicalPath = pathPattern.replace("..", "") + "/**";
 		registry.addResourceHandler(logicalPath).addResourceLocations("file:/" + absolutePath + "/"); 
 	}
-	
+
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		// đăng ký class PagingAndSortingArgumentResolver trong lớp cấu hình MVC 
+		resolvers.add(new PagingAndSortingArgumentResolver());
+	}
 	
 	/*
 	 String dirName = "user-photos";
@@ -52,6 +60,8 @@ public class MvcConfig implements WebMvcConfigurer{
 	String brandLogosPath = brandLogosDir.toFile().getAbsolutePath();
 	registry.addResourceHandler("/brand-logos/**").addResourceLocations("file:/" + brandLogosPath + "/");
 	*/
+	
+	
 	
 }
 
