@@ -24,7 +24,7 @@ public class MainController {
 	@GetMapping("/login")
 	public String loginPage() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		// kiểm tra xem có người dùng đã xác thực hay không ?
+		// kiểm tra xem có người dùng đã xác thực hay chưa ? nếu chưa sẽ chuyển về trang login
 		// Spring Security theo mặc định sẽ đặt AnonymousAuthenticationToken làm authentication trên SecurityContextHolder nếu như ta chưa login
 		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
 		    return "login";
