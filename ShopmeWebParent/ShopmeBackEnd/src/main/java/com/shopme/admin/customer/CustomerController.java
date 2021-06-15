@@ -34,7 +34,7 @@ public class CustomerController {
 		return "customers/customers";
 	}
 	
-	@PostMapping("/customers/saveCustomer")
+	@PostMapping("/customers/saveCustomer") 
 	public String saveCustomer(Customer customer, RedirectAttributes attributes) {
 		customerService.saveCustomer(customer);
 		attributes.addFlashAttribute("message", "The Customer ID " + customer.getId() + " has been saved successfully.");
