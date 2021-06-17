@@ -16,13 +16,23 @@ spring:
         format_sql: true
     show-sql: true
 
-    security:
-      oauth2:
-        client:
-          registration:
-            google:
-              client-id: 138368193606-pt6gv64nhr5tejtb2hj406uoe7l65pnt.apps.googleusercontent.com
-              client-secret: wxlCM2Ldmtsfrlj9H2v6XsHK
-              scope:
-              - email
-              - profile
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 138368193606-pt6gv64nhr5tejtb2hj406uoe7l65pnt.apps.googleusercontent.com
+            client-secret: wxlCM2Ldmtsfrlj9H2v6XsHK
+            scope:
+            - email
+            - profile
+          facebook:
+            client-id: 825037714803248
+            client-secret: 33f959766171fe4091546e85ec3e2079
+            scope:
+            - email
+            - public_profile    
+            
+            
+            
+              
