@@ -36,14 +36,15 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 		System.out.println("OAuth2LoginSuccessHandler: " + name + " | " + email);	
 		System.out.println("Client Name: " + clientName);
 		
-		// sau khi customer login = Google thành công, ta sẽ có được name, email của customer đó, sau đó sẽ tìm trong DB theo email có được
+		// sau khi customer login = Google or Facebook thành công, ta sẽ có được name,email,... của customer đó, sau đó sẽ tìm trong DB theo email có được
 		// nếu k tìm được customer theo email trong DB -> add customer detail mới vào DB với email, name được sử dụng khi login = Google, 
-		// còn nếu tìm được sẽ update customerAuthemticationType = GOOGLE cho customer
+		// còn nếu tìm được sẽ update fullName và customerAuthemticationType = GOOGLE cho customer
 		AuthenticationType authenticationType = getAuthenticationType(clientName);
 		Customer customer = customerService.getCustomerByEmail(email);
 		if (customer == null) {
 			customerService.addNewCustomerUponOAuthLogin(name, email, countryCode, authenticationType);
 		} else {
+			customerOAuth2User.setFullName(customer.getFullName());
 			customerService.updateCustomerAuthenticationType(customer, authenticationType);
 		}
 		super.onAuthenticationSuccess(request, response, authentication);

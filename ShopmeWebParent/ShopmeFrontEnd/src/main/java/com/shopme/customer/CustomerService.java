@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.shopme.common.entity.AuthenticationType;
 import com.shopme.common.entity.Country;
 import com.shopme.common.entity.Customer;
+import com.shopme.common.exception.CustomerNotFoundException;
 import com.shopme.setting.CountryRepository;
 
 import net.bytebuddy.utility.RandomString;
@@ -55,9 +56,25 @@ public class CustomerService {
 		customerRepository.save(customer);
 	}
 	
-	private void encodePassword(Customer customer) {
-		String encodedPassword = passwordEncoder.encode(customer.getPassword());
-		customer.setPassword(encodedPassword);
+	public void updateCustomer(Customer customerInForm) {
+		Customer customerInDB = customerRepository.findById(customerInForm.getId()).get();
+		// chỉ khi login bằng DB mới có thể update password còn login = google, facebook thì không
+		if (customerInDB.getAuthenticationType().equals(AuthenticationType.DATABASE)) {
+			if (!customerInForm.getPassword().isEmpty()) {
+				String passwordEncoded = passwordEncoder.encode(customerInForm.getPassword());
+				customerInForm.setPassword(passwordEncoded);
+			} else {
+				customerInForm.setPassword(customerInDB.getPassword());
+			}
+		} else {
+			customerInForm.setPassword(customerInDB.getPassword());
+		}
+		customerInForm.setCreatedTime(customerInDB.getCreatedTime());
+		customerInForm.setEnabled(customerInDB.isEnabled());
+		customerInForm.setVerificationCode(customerInDB.getVerificationCode());
+		customerInForm.setAuthenticationType(customerInDB.getAuthenticationType());
+		customerInForm.setResetPasswordToken(customerInDB.getResetPasswordToken());
+		customerRepository.save(customerInForm);
 	}
 	
 	public boolean verifyAccount(String verificationCode) {
@@ -70,6 +87,36 @@ public class CustomerService {
 			customerRepository.enableCustomer(customer.getId());
 			return true;
 		}	
+	}
+	
+	public String updateResetPassword(String email) throws CustomerNotFoundException {
+		// tìm customer trong db theo email đã nhập trong form, nếu tìm được sẽ sinh ra 1 token random cho customer đó và trả về token đó 
+		// để gắn vào link xác thục trong e-mail
+		Customer customer = customerRepository.findByEmail(email);
+		if (customer != null) {
+			String token = RandomString.make(30);
+			customer.setResetPasswordToken(token);
+			customerRepository.save(customer);
+			return token;
+		} else {
+			throw new CustomerNotFoundException("Could not find any customer with email " + email);
+		}
+	}
+	
+	public Customer getByResetPasswordToken(String token) {
+		return customerRepository.findByResetPasswordToken(token);
+	}
+	
+	public void updatePassword(String newPassword, String token) throws CustomerNotFoundException {
+		Customer customer = customerRepository.findByResetPasswordToken(token);
+		if (customer != null) {
+			customer.setPassword(newPassword);
+			customer.setResetPasswordToken(null);
+			encodePassword(customer);
+			customerRepository.save(customer);
+		} else {
+			throw new CustomerNotFoundException("No customer found: invalid token");
+		}
 	}
 	
 	public void updateCustomerAuthenticationType(Customer customer, AuthenticationType type) {
@@ -95,6 +142,11 @@ public class CustomerService {
 		customer.setCountry(countryRepository.findByCode(countryCode));
 		
 		customerRepository.save(customer);
+	}
+	
+	private void encodePassword(Customer customer) {
+		String encodedPassword = passwordEncoder.encode(customer.getPassword());
+		customer.setPassword(encodedPassword);
 	}
 	
 	private void setName(String name, Customer customer) {
