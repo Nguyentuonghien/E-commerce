@@ -36,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		       .antMatchers("/customer").authenticated()
+		       .antMatchers("/account_details", "/update_account_details").authenticated()
 		       .anyRequest().permitAll()          // url: "/customer" cần xác thực còn các url khác không cần
 		       .and()
 		       .formLogin()

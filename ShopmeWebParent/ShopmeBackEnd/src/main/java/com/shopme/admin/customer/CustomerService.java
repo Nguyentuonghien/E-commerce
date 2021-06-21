@@ -39,8 +39,7 @@ public class CustomerService {
 	}
 	
 	public void saveCustomer(Customer customerInForm) {
-		// nếu customer nhập pass mới vào trong form(add) -> encode cho pass mới đó
-		// còn nếu pass trống -> k thay đổi pass(edit) -> giữ nguyên pass trong DB cho customer
+		// nếu customer nhập pass mới vào trong form(add)->encode cho pass mới đó còn nếu pass trống->k thay đổi pass(edit)->giữ nguyên pass trong DB cho customer
 		Customer customerInDB = customerRepository.findById(customerInForm.getId()).get();
 		if (!customerInForm.getPassword().isEmpty()) {
 			String encodedPassword = passwordEncoder.encode(customerInForm.getPassword());
@@ -51,7 +50,8 @@ public class CustomerService {
 		customerInForm.setEnabled(customerInDB.isEnabled());
 		customerInForm.setCreatedTime(customerInDB.getCreatedTime());
 		customerInForm.setVerificationCode(customerInDB.getVerificationCode());
-		
+		customerInForm.setAuthenticationType(customerInDB.getAuthenticationType());
+		customerInForm.setResetPasswordToken(customerInDB.getResetPasswordToken());
 		customerRepository.save(customerInForm);
 	}
 	

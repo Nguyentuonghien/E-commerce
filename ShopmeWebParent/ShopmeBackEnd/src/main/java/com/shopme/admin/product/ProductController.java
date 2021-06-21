@@ -130,6 +130,34 @@ public class ProductController {
 		return "redirect:/products";
 	}
 
+	@GetMapping("/products/editProduct/{id}")
+	public String editProduct(@PathVariable("id") Integer id, Model model, RedirectAttributes attributes, 
+			                  @AuthenticationPrincipal ShopmeUserDetails loggedUser) {
+		try {
+			Product product = productService.getProduct(id);
+			List<Brand> listBrands = brandService.listAll();
+			Integer numberOfExistingExtraImages = product.getProductImages().size();
+			Integer numberOfExistingDetail = product.getProductDetails().size();
+			
+			boolean isReadOnlyForSalesperson = false;
+			if (!loggedUser.hasRole("Admin") && !loggedUser.hasRole("Editor")) {
+				if (loggedUser.hasRole("Salesperson")) {
+					isReadOnlyForSalesperson = true;
+				}
+			}
+			model.addAttribute("isReadOnlyForSalesperson", isReadOnlyForSalesperson);
+			model.addAttribute("product", product);
+			model.addAttribute("listBrands", listBrands);
+			model.addAttribute("pageTitle", "Edit Product (ID:" + id + ")");
+			model.addAttribute("numberOfExistingExtraImages", numberOfExistingExtraImages);
+			model.addAttribute("numberOfExistingDetail", numberOfExistingDetail);
+			return "products/product_form";
+		} catch (ProductNotFoundException ex) {
+			attributes.addFlashAttribute("message", ex.getMessage());
+			return "redirect:/products";
+		}
+	}
+	
 	@GetMapping("/products/{id}/enabled/{status}")
 	public String updateProductEnabledStatus(@PathVariable("id") Integer id, @PathVariable("status") boolean enabled,
 			RedirectAttributes attributes) {
@@ -154,27 +182,6 @@ public class ProductController {
 			attributes.addFlashAttribute("message", ex.getMessage());
 		}
 		return "redirect:/products";
-	}
-	
-	@GetMapping("/products/editProduct/{id}")
-	public String editProduct(@PathVariable("id") Integer id, Model model, RedirectAttributes attributes) {
-		try {
-			Product product = productService.getProduct(id);
-			List<Brand> listBrands = brandService.listAll();
-			
-			Integer numberOfExistingExtraImages = product.getProductImages().size();
-			Integer numberOfExistingDetail = product.getProductDetails().size();
-			
-			model.addAttribute("product", product);
-			model.addAttribute("listBrands", listBrands);
-			model.addAttribute("pageTitle", "Edit Product (ID:" + id + ")");
-			model.addAttribute("numberOfExistingExtraImages", numberOfExistingExtraImages);
-			model.addAttribute("numberOfExistingDetail", numberOfExistingDetail);
-			return "products/product_form";
-		} catch (ProductNotFoundException ex) {
-			attributes.addFlashAttribute("message", ex.getMessage());
-			return "redirect:/products";
-		}
 	}
 	
 	@GetMapping("/products/detail/{id}")
