@@ -65,7 +65,7 @@ public class CustomerController {
 	
 	@GetMapping("/account_details")
 	public String viewAccountDetails(Model model, HttpServletRequest request) {
-		String email = getEmailOfAuthenticatedCustomer(request);
+		String email = Utility.getEmailOfAuthenticatedCustomer(request);
 		Customer customer = customerService.getCustomerByEmail(email);
 		List<Country> listCountries = customerService.listAllCountries();
 		model.addAttribute("customer", customer);
@@ -79,21 +79,6 @@ public class CustomerController {
 		updateNameAuthenticatedCustomer(customer, request);
 		attributes.addFlashAttribute("message", "Your account details have been updated.");
 		return "redirect:/account_details";
-	}
-	
-	// vì có 1 số cách login khác nhau: login = form(có hoặc không dùng remember me) -> trả về email của customer còn login = google or facebook 
-	// sẽ trả về name customer -> từ đối tượng principal ta sẽ cast theo từng trường hợp tương ứng
-	private String getEmailOfAuthenticatedCustomer(HttpServletRequest request) {
-		Object principal = request.getUserPrincipal();
-		String customerEmail = null;
-		if (principal instanceof UsernamePasswordAuthenticationToken || principal instanceof RememberMeAuthenticationToken) {
-			customerEmail = request.getUserPrincipal().getName();
-		} else if (principal instanceof OAuth2AuthenticationToken){
-			OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) principal;
-			CustomerOAuth2User customerOAuth2User = (CustomerOAuth2User) oauth2Token.getPrincipal();
-			customerEmail = customerOAuth2User.getEmail();
-		}
-		return customerEmail;
 	}
 	
 	private void updateNameAuthenticatedCustomer(Customer customer, HttpServletRequest request) {
