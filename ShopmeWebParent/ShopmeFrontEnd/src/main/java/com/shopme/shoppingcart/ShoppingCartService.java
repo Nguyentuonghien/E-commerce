@@ -1,25 +1,31 @@
 package com.shopme.shoppingcart;
 
+import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.shopme.common.entity.CartItem;
 import com.shopme.common.entity.Customer;
 import com.shopme.common.entity.Product;
+import com.shopme.product.ProductRepository;
 
 @Service
+@Transactional
 public class ShoppingCartService {
 
 	@Autowired
 	private CartItemRepository cartItemRepository;
 
+	@Autowired
+	private ProductRepository productRepository;
+	
 	public Integer addProduct(Integer productId, Integer quantity, Customer customer) throws ShoppingCartException {
 		Integer updatedQuantity = quantity;
 		Product product = new Product(productId);
 		CartItem cartItem = cartItemRepository.findByCustomerAndProduct(customer, product);
 		
-		// tìm cartItem theo customer và product trong db. Nếu cartItem == null -> product này chưa được mua -> tạo 1 cartItem mới và set các gtri mới cho nó 
-		// nếu cartItem != null -> update số lượng cho nó = số lượng hiện tại trong cart + số lượng thêm vào và số lượng k được > 5
+		// tìm cartItem theo customer,product trong db.Nếu cartItem == null -> product này chưa có trong giỏ hàng -> tạo 1 cartItem mới và set các gtri mới cho nó 
+		// nếu cartItem != null -> đã có product trong giỏ hàng->update số lượng cho nó = số lượng hiện tại trong cart + số lượng thêm vào và số lượng k được > 5
 		if (cartItem == null) {
 			cartItem = new CartItem();
 			cartItem.setCustomer(customer);
@@ -39,6 +45,21 @@ public class ShoppingCartService {
 		return updatedQuantity;
 	}
 
+	public List<CartItem> listCartItems(Customer customer) {
+		return cartItemRepository.findByCustomer(customer);
+	}
+	
+	public float updateQuantity(Integer quantity, Customer customer, Integer productId) {
+		cartItemRepository.updateQuantity(quantity, customer.getId(), productId);
+		Product product = productRepository.findById(productId).get();
+		float subTotal = product.getDiscountPrice() * quantity;
+		return subTotal;
+	}
+	
+	public void removeProduct(Customer customer, Integer productId) {
+		cartItemRepository.deleteByCustomerAndProduct(customer.getId(), productId);
+	}
+	
 }
 
  

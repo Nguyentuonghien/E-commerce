@@ -8,7 +8,6 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.shopme.Utility;
@@ -58,7 +58,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/verify")
-	public String verifiAccount(@Param("code") String code, Model model) {
+	public String verifiAccount(@RequestParam("code") String code, Model model) {
 		boolean verified = customerService.verifyAccount(code);
 		return "register/" + (verified ? "verify_success" : "verify_fail");
 	}

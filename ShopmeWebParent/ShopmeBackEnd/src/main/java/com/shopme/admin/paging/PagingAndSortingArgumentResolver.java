@@ -16,7 +16,6 @@ public class PagingAndSortingArgumentResolver implements HandlerMethodArgumentRe
 
 	/**
 	 * resolveArgument(): sẽ được Spring MVC gọi khi @PagingAndSortingParam được sử dụng trong controller khi xử lý method
-	 *
 	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer model, 
