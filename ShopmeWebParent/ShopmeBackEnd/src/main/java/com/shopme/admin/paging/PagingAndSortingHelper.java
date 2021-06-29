@@ -40,7 +40,7 @@ public class PagingAndSortingHelper {
 	public void updateModelAttributes(int pageNumber, Page<?> pages) {
         List<?> listItems = pages.getContent();
 		int pageSize = pages.getSize();
-		long startCount = (pageNumber-1) * pageSize + 1;
+		long startCount = (pageNumber - 1) * pageSize + 1;
 		long endCount = startCount + pageSize - 1;
 		if(endCount > pages.getTotalElements()) {
 			endCount = pages.getTotalElements();
