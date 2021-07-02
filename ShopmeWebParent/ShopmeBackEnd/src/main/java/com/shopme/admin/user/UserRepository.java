@@ -19,7 +19,7 @@ public interface UserRepository extends SearchRepository<User, Integer>{
 	public Long countById(Integer id);
 	
 	@Query("UPDATE User u SET u.enabled = ?2 WHERE u.id = ?1")
-	@Modifying              // duoc su dung cho UPDATE queries 
+	@Modifying              
 	public void updateEnabledStatus(Integer id, boolean enabled);
 	
 	@Query("SELECT u FROM User u WHERE CONCAT(u.id, ' ', u.email, ' ', u.firstName, ' ',"

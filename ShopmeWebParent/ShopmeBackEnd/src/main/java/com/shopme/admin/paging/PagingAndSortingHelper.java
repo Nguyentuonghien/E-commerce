@@ -37,6 +37,20 @@ public class PagingAndSortingHelper {
 		return keyword;
 	}
 	
+	public void listEntities(int pageNumber, int pageSize, SearchRepository<?, Integer> repository) {
+		Sort sort = Sort.by(sortField);
+		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+		// nếu search thì sẽ vừa seach+phân trang, nếu k chỉ phân trang
+		Page<?> page = null;
+		if (keyword != null) {
+			page = repository.findAll(keyword, pageable);
+		} else {
+		    page = repository.findAll(pageable);
+		}
+		updateModelAttributes(pageNumber, page);
+	}
+	
 	public void updateModelAttributes(int pageNumber, Page<?> pages) {
         List<?> listItems = pages.getContent();
 		int pageSize = pages.getSize();
@@ -51,20 +65,6 @@ public class PagingAndSortingHelper {
 		model.addAttribute("totalPages", pages.getTotalPages());
 		model.addAttribute("totalItems", pages.getTotalElements());
 		model.addAttribute(listName, listItems);
-	}
-	
-	public void listEntities(int pageNumber, int pageSize, SearchRepository<?, Integer> repository) {
-		Sort sort = Sort.by(sortField);
-		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
-		// nếu search thì sẽ vừa seach+phân trang, nếu k chỉ phân trang
-		Page<?> page = null;
-		if (keyword != null) {
-			page = repository.findAll(keyword, pageable);
-		} else {
-		    page = repository.findAll(pageable);
-		}
-		updateModelAttributes(pageNumber, page);
 	}
 	
 }
