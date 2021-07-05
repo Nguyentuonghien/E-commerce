@@ -78,7 +78,15 @@ public class CustomerController {
 		customerService.updateCustomer(customer);
 		updateNameAuthenticatedCustomer(customer, request);
 		attributes.addFlashAttribute("message", "Your account details have been updated.");
-		return "redirect:/account_details";
+		
+		String redirectOption = request.getParameter("redirect");
+		String redirectURL = "redirect:/account_details";
+		// customer đang edit account_detail từ form của address_book -> redirect về trang address_book
+		// còn không vẫn redirect về trang account_detail của customer như thường
+		if (redirectOption.equals("address_book")) {
+			redirectURL = "redirect:/address_book";
+		}
+		return redirectURL;
 	}
 	
 	private void updateNameAuthenticatedCustomer(Customer customer, HttpServletRequest request) {

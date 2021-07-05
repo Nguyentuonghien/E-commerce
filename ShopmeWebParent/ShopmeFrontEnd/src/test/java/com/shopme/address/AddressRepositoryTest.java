@@ -26,7 +26,8 @@ public class AddressRepositoryTest {
 	@Test
 	public void testAddNew() {
 		Integer customerId = 5;
-		Integer countryId = 234;
+		Integer countryId = 234; // USA
+		
 		Address newAddress = new Address();
 		newAddress.setCustomer(new Customer(customerId));
 		newAddress.setCountry(new Country(countryId));
@@ -41,6 +42,7 @@ public class AddressRepositoryTest {
 		
 		Address savedAddress = addressRepository.save(newAddress);
 		
+		assertThat(savedAddress).isNotNull();
 		assertThat(savedAddress.getId()).isGreaterThan(0);
 	}
 	
@@ -65,14 +67,15 @@ public class AddressRepositoryTest {
 	
 	@Test
 	public void testUpdate() {
-		Integer addressId = 1;
-		String phoneNumber = "646-232-3932";
+		Integer addressId = 2;
+		// String phoneNumber = "646-232-3932";
 		
 		Address address = addressRepository.findById(addressId).get();
-		address.setPhoneNumber(phoneNumber);
+		//address.setPhoneNumber(phoneNumber);
+		address.setDefaultForShipping(true);
 
 		Address updatedAddress = addressRepository.save(address);
-		assertThat(updatedAddress.getPhoneNumber()).isEqualTo(phoneNumber);
+		//assertThat(updatedAddress.getPhoneNumber()).isEqualTo(phoneNumber);
 	}
 	
 	@Test

@@ -42,7 +42,7 @@ public class Address {
 	private String postalCode;
 	
 	@Column(name = "default_address")
-	private String defaultForShipping;
+	private boolean defaultForShipping;
 	
 	@ManyToOne
 	@JoinColumn(name = "country_id")
@@ -132,11 +132,11 @@ public class Address {
 		this.country = country;
 	}
 
-	public String getDefaultForShipping() {
+	public boolean isDefaultForShipping() {
 		return defaultForShipping;
 	}
 
-	public void setDefaultForShipping(String defaultForShipping) {
+	public void setDefaultForShipping(boolean defaultForShipping) {
 		this.defaultForShipping = defaultForShipping;
 	}
 
@@ -150,10 +150,25 @@ public class Address {
 
 	@Override
 	public String toString() {
-		return "Address [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", phoneNumber="
-				+ phoneNumber + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city=" + city
-				+ ", state=" + state + ", postalCode=" + postalCode + ", defaultForShipping=" + defaultForShipping
-				+ ", country=" + country + ", customer=" + customer + "]";
+		String address = firstName;
+		// lastName có thể rỗng khi customer login qua google or facebook
+		if (lastName != null && !lastName.isEmpty()) {
+			address += " " + lastName;
+		}
+		// addressLine1 sẽ không rỗng
+		if (!addressLine1.isEmpty()) {
+			address += ", " + addressLine1;
+		}
+		if (addressLine2 != null && !addressLine1.isEmpty()) {
+			address += ", " + addressLine2;
+		}
+        if (!city.isEmpty()) address += ", " + city;
+		if (state != null && !state.isEmpty()) address += ", " + state;
+		address += ", " + country.getName();
+		if (!postalCode.isEmpty()) address += ". Postal Code: " + postalCode;
+		if (!phoneNumber.isEmpty()) address += ". Phone Number: " + phoneNumber;
+		
+		return address;
 	}
 	
 	
