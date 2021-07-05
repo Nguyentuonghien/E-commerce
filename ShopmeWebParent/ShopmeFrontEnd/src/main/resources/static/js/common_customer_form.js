@@ -15,11 +15,11 @@ $(document).ready(function() {
 });
 
 function loadStatesForCountry() {
-    // lấy ra value của country được chọn trên form
     selectedCountry = $("#country option:selected");
 	countryId = selectedCountry.val();
 	url = contextPath + "settings/list_states_by_country/" + countryId;
 	
+	// ajax call tới server để lấy ra list state thuộc về country được chọn trên form
 	$.get(url, function(responseJSON) {
 		dataListState.empty();
 		// lấy ra từng object trong responseJSON

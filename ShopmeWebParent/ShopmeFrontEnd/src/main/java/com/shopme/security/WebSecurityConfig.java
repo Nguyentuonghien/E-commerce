@@ -37,16 +37,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		       .antMatchers("/account_details", "/update_account_details", "/cart").authenticated()
-		       .anyRequest().permitAll()          // url: "/customer" cần xác thực còn các url khác không cần
+		       // các url cần xác thực để có thể truy cập được
+		       .antMatchers("/account_details", "/update_account_details", "/cart", "/address_book/**").authenticated()
+		       .anyRequest().permitAll()    
 		       .and()
 		       .formLogin()
-		           .loginPage("/login")           // cho phép người dùng xác thực bằng form login với đường dẫn "/login", parameter mặc định email
+		           // cho phép người dùng xác thực bằng form login với đường dẫn "/login", parameter mặc định email
+		           .loginPage("/login")           
 		           .usernameParameter("email")    
 		           .successHandler(databaseLoginSuccessHandler)
 		           .permitAll()
 		       .and()
-		       .oauth2Login()                     // kích hoạt xác thực OAuth cùng với form login thông thường
+		       .oauth2Login()
+		           // kích hoạt xác thực OAuth cùng với form login thông thường
 		           .loginPage("/login")
 		           .userInfoEndpoint()
 		           .userService(oAuth2UserService)
@@ -59,7 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		           .key("1234567890_aBcDeFgHiJkLmNoPqRsTuVwXyZ")
 		           .tokenValiditySeconds(14 * 24 * 60 * 60)
 		       .and()
-		           .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);  // tạo giá trị mã thông báo CSRF ngay cả khi user không đăng nhập
+		           // tạo giá trị mã thông báo CSRF ngay cả khi user không đăng nhập
+		           .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);  
 	}
 	
 	@Override
