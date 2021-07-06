@@ -30,6 +30,14 @@ public class AddressService {
 		addressRepository.deleteByIdAndCustomer(addressId, customerId);
 	}
 	
+	public void setDefaultAddress(Integer defaultAddressId, Integer customerId) {
+		// nếu primary_address được set là defaultAddress -> các default_address khác của các address trong db phải setNonDefaultAddressForOthers (= 0)
+		if (defaultAddressId > 0) {
+		    addressRepository.setDefaultAddress(defaultAddressId);
+		}
+		addressRepository.setNonDefaultAddressForOthers(defaultAddressId, customerId);
+	}
+	
 }
 
 

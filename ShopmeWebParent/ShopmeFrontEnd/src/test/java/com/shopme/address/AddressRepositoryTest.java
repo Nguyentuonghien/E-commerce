@@ -26,19 +26,19 @@ public class AddressRepositoryTest {
 	@Test
 	public void testAddNew() {
 		Integer customerId = 5;
-		Integer countryId = 234; // USA
+		Integer countryId = 234;
 		
 		Address newAddress = new Address();
 		newAddress.setCustomer(new Customer(customerId));
 		newAddress.setCountry(new Country(countryId));
-		newAddress.setFirstName("Tobie");
-		newAddress.setLastName("Abel");
-		newAddress.setPhoneNumber("19094644165");
-		newAddress.setAddressLine1("4213 Gordon Street");
-		newAddress.setAddressLine2("Novak Building");
-		newAddress.setCity("Chino");
-		newAddress.setState("California");
-		newAddress.setPostalCode("91710");
+		newAddress.setFirstName("Charle");
+		newAddress.setLastName("Burger");
+		newAddress.setPhoneNumber("0915344779");
+		newAddress.setAddressLine1("41/27 Vong Street");
+		newAddress.setAddressLine2("");
+		newAddress.setCity("Ha Noi");
+		newAddress.setState("Ha Noi");
+		newAddress.setPostalCode("123456");
 		
 		Address savedAddress = addressRepository.save(newAddress);
 		
@@ -86,6 +86,22 @@ public class AddressRepositoryTest {
 		Address address = addressRepository.findByIdAndCustomer(addressId, customerId);
 		
 		assertThat(address).isNull();
+	}
+	
+	@Test
+	public void testSetDefaultAddress() {
+		Integer addressId = 4;
+		addressRepository.setDefaultAddress(addressId);
+		Address address = addressRepository.findById(addressId).get();
+		
+		assertThat(address.isDefaultForShipping()).isTrue();
+	}
+	
+	@Test
+	public void testSetNonDefaultAddress() {
+		Integer addressId = 4;
+		Integer customerId = 5;
+		addressRepository.setNonDefaultAddressForOthers(addressId, customerId);
 	}
 	
 }

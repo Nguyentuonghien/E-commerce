@@ -80,6 +80,13 @@ public class AddressController {
 		return "redirect:/address_book";
 	}
 	
+	@GetMapping("/address_book/default/{id}")
+	public String setDefaultAddress(@PathVariable("id") Integer id, Model model, HttpServletRequest request) {
+		Customer customer = getAuthenticatedCustomer(request);
+		addressService.setDefaultAddress(id, customer.getId());
+		return "redirect:/address_book";
+	}
+	
 	// lấy ra 1 đối tượng customer đại diên cho customer đã được xác thực (vì chỉ khi customer đã login mới có thể xem được phần address-book)
 	private Customer getAuthenticatedCustomer(HttpServletRequest request) {
 		String email = Utility.getEmailOfAuthenticatedCustomer(request);

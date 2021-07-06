@@ -20,4 +20,14 @@ public interface AddressRepository extends CrudRepository<Address, Integer> {
 	@Modifying
 	public void deleteByIdAndCustomer(Integer addressId, Integer customerId);
 	
+	@Query("UPDATE Address a SET a.defaultForShipping = true WHERE a.id = ?1")	
+	@Modifying
+	public void setDefaultAddress(Integer id);
+	
+	// nếu 2 address cùng có defaultForShipping=true -> address có id khác defaultAddressId truyền vào thì defaultForShipping=false
+	// vì không được 2 address có cùng defaultForShipping=true
+	@Query("UPDATE Address a SET a.defaultForShipping = false WHERE a.id != ?1 AND a.customer.id = ?2")
+	@Modifying
+	public void setNonDefaultAddressForOthers(Integer defaultAddressId, Integer customerId);
+	
 }
