@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import com.shopme.common.entity.Product;
+import com.shopme.common.entity.product.Product;
 
 @Repository
 public interface ProductRepository extends PagingAndSortingRepository<Product, Integer>{

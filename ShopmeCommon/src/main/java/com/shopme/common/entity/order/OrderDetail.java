@@ -1,20 +1,16 @@
-package com.shopme.common.entity;
+package com.shopme.common.entity.order;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.shopme.common.entity.IdBasedEntity;
+import com.shopme.common.entity.product.Product;
+
 @Entity
 @Table(name = "order_details")
-public class OrderDetail {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+public class OrderDetail extends IdBasedEntity {
 	
 	private int quantity;
 	private float unitPrice;
@@ -29,14 +25,6 @@ public class OrderDetail {
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
 	public int getQuantity() {
 		return quantity;

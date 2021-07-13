@@ -14,11 +14,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.Rollback;
 
 import com.shopme.common.entity.Customer;
-import com.shopme.common.entity.Order;
-import com.shopme.common.entity.OrderDetail;
-import com.shopme.common.entity.OrderStatus;
-import com.shopme.common.entity.PaymentMethod;
-import com.shopme.common.entity.Product;
+import com.shopme.common.entity.order.Order;
+import com.shopme.common.entity.order.OrderDetail;
+import com.shopme.common.entity.order.OrderStatus;
+import com.shopme.common.entity.order.PaymentMethod;
+import com.shopme.common.entity.product.Product;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -70,9 +70,9 @@ public class OrderRepositoryTest {
 	
 	@Test
 	public void testCreateNewOrderWithMultipleProduct() {
-		Customer customer = entityManager.find(Customer.class, 2);
-		Product product1 = entityManager.find(Product.class, 3);
-		Product product2 = entityManager.find(Product.class, 5);
+		Customer customer = entityManager.find(Customer.class, 10);
+		Product product1 = entityManager.find(Product.class, 20);
+		Product product2 = entityManager.find(Product.class, 40);
 		
 		Order mainOrder = new Order();
 		mainOrder.setCustomer(customer);
@@ -108,8 +108,8 @@ public class OrderRepositoryTest {
 		mainOrder.setSubtotal(subtotal);
 		mainOrder.setTotal(subtotal + 30);
 		
-		mainOrder.setPaymentMethod(PaymentMethod.COD);
-		mainOrder.setStatus(OrderStatus.PROCESSING);
+		mainOrder.setPaymentMethod(PaymentMethod.CREDIT_CARD);
+		mainOrder.setStatus(OrderStatus.PACKAGED);
 		mainOrder.setDeliverDate(new Date());
 		mainOrder.setDeliverDays(3);
 		
