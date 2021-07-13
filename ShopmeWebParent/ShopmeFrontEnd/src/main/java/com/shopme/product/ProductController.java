@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.shopme.category.CategoryService;
 import com.shopme.common.entity.Category;
-import com.shopme.common.entity.Product;
+import com.shopme.common.entity.product.Product;
 import com.shopme.common.exception.CategoryNotFoundException;
 import com.shopme.common.exception.ProductNotFoundException;
 

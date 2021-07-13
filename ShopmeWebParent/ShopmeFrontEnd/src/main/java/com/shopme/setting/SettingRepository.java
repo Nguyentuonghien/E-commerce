@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.shopme.common.entity.Setting;
-import com.shopme.common.entity.SettingCategory;
+import com.shopme.common.entity.setting.Setting;
+import com.shopme.common.entity.setting.SettingCategory;
 
 @Repository
 public interface SettingRepository extends CrudRepository<Setting, String> {

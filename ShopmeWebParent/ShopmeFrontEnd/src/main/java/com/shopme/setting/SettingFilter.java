@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.shopme.common.entity.Setting;
+import com.shopme.common.entity.setting.Setting;
 
 @Component
 public class SettingFilter implements Filter {
@@ -38,7 +38,6 @@ public class SettingFilter implements Filter {
 		}
 		List<Setting> listSettings = settingService.getGeneralSettings();
 		listSettings.forEach(setting -> {
-			// System.out.println(setting);
 			// put (value và key) vào trong request
 			request.setAttribute(setting.getKey(), setting.getValue());
 			System.out.println(setting.getKey() + " ==> " + setting.getValue());
