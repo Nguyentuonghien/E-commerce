@@ -83,8 +83,11 @@ public class CustomerController {
 		String redirectURL = "redirect:/account_details";
 		// customer đang edit account_detail từ form của address_book -> redirect về trang address_book
 		// còn không vẫn redirect về trang account_detail của customer như thường
+		// nếu redirect=cart -> return trang shopping_cart
 		if (redirectOption.equals("address_book")) {
 			redirectURL = "redirect:/address_book";
+		} else if (redirectOption.equals("cart")) {
+			redirectURL = "redirect:/cart";
 		}
 		return redirectURL;
 	}

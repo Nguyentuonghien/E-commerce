@@ -25,7 +25,7 @@ public class ShoppingCartService {
 		CartItem cartItem = cartItemRepository.findByCustomerAndProduct(customer, product);
 		
 		// tìm cartItem theo customer,product trong db.Nếu cartItem == null -> product này chưa có trong giỏ hàng -> tạo 1 cartItem mới và set các gtri mới cho nó 
-		// nếu cartItem != null -> đã có product trong giỏ hàng->update số lượng cho nó = số lượng hiện tại trong cart + số lượng thêm vào và số lượng k được > 5
+		// nếu cartItem != null -> đã có product trong giỏ hàng -> update số lượng cho nó = số lượng hiện tại trong cart + số lượng thêm vào(số lượng k được > 5)
 		if (cartItem == null) {
 			cartItem = new CartItem();
 			cartItem.setCustomer(customer);
@@ -36,9 +36,8 @@ public class ShoppingCartService {
 			System.out.println("With cartItem != null, Updated Quantity = " + updatedQuantity);
 			if (updatedQuantity > 5) {
 				throw new ShoppingCartException("Could not add more " + quantity + " item(s)"
-						+ " because there's already " + cartItem.getQuantity() + " item(s) "
-						+ "in your shopping cart. Maximum allowed quantity is 5.");
-			}
+					                + " because there's already " + cartItem.getQuantity() + " item(s) in your shopping cart. Maximum allowed quantity is 5.");
+			}  
 		}	
 		cartItem.setQuantity(updatedQuantity);
 		cartItemRepository.save(cartItem);
