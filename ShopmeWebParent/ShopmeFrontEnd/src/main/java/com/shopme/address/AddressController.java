@@ -35,6 +35,7 @@ public class AddressController {
 		for (Address address : listAddresses) {
 			if (address.isDefaultForShipping()) {
 				usePrimaryAddressAsDefault = false;
+				break;
 			}
 		}
 		model.addAttribute("listAddresses", listAddresses);
@@ -81,10 +82,16 @@ public class AddressController {
 	}
 	
 	@GetMapping("/address_book/default/{id}")
-	public String setDefaultAddress(@PathVariable("id") Integer id, Model model, HttpServletRequest request) {
+	public String setDefaultAddress(@PathVariable("id") Integer addressId, HttpServletRequest request) {
 		Customer customer = getAuthenticatedCustomer(request);
-		addressService.setDefaultAddress(id, customer.getId());
-		return "redirect:/address_book";
+		addressService.setDefaultAddress(addressId, customer.getId());
+		
+		String redirectOption = request.getParameter("redirect");
+		String redirectURL = "redirect:/address_book";
+		if ("cart".equals(redirectOption)) {
+			redirectURL = "redirect:/cart";
+		}
+		return redirectURL;
 	}
 	
 	// lấy ra 1 đối tượng customer đại diên cho customer đã được xác thực (vì chỉ khi customer đã login mới có thể xem được phần address-book)

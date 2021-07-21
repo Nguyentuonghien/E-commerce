@@ -21,7 +21,10 @@ public class CartItem extends IdBasedEntity {
 	private Product product;
 
 	private int quantity;
-
+	
+	@Transient
+	private float shippingCost;
+	
 	public CartItem() {
 	}
 
@@ -51,15 +54,24 @@ public class CartItem extends IdBasedEntity {
 
 	@Override
 	public String toString() {
-		return "CartItem [id=" + id + ", customer=" + customer.getFullName() + ", product=" + product.getShortName() + ", quantity=" + quantity
-				+ "]";
+		return "CartItem [id=" + id + ", customer=" + customer.getFullName() + ", product=" + product.getShortName() + ", quantity=" + quantity + "]";
 	}
 	
 	@Transient
 	public float getSubtotal() {
+		// tính giá mỗi sản phẩm nếu được discount hoặc không
 		return product.getDiscountPrice() * quantity;
 	}
 
+	@Transient
+	public float getShippingCost() {
+		return shippingCost;
+	}
+
+	public void setShippingCost(float shippingCost) {
+		this.shippingCost = shippingCost;
+	}
+	
 }
 
 

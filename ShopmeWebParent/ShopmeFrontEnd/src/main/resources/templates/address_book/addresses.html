@@ -18,6 +18,7 @@
         <div th:if="${message != null}" class="alert alert-success text-center m-1">[[${message}]]</div>
         
         <div class="row m-1">
+            <!-- Primary Address -->
             <div class="col-sm-6 mt-2">
                 <div class="card" th:classappend="${usePrimaryAddressAsDefault ? 'bg-warning' : ''}">
                     <div class="card-header">
@@ -27,8 +28,10 @@
 								<th:block th:if="${usePrimaryAddressAsDefault}">
 									<span class="text-danger">[Default]</span>
 								</th:block>
+								
 								<th:block th:unless="${usePrimaryAddressAsDefault}">
-									<a th:href="@{'/address_book/default/0'}">[Set as default]</a>
+									<a th:unless="${param.redirect}" th:href="@{'/address_book/default/0'}">[Set as default]</a>
+									<a th:if="${param.redirect}" th:href="@{'/address_book/default/0?redirect=' + ${param.redirect}}">[Set as default]</a>
 								</th:block>
 							</div>
                             <div class="col">
@@ -46,7 +49,8 @@
                     </div>
                 </div>
             </div>
-        
+            
+            <!-- Address #... -->
 	        <th:block th:each="address, status : ${listAddresses}">
 	            <div class="col-sm-6 mt-2">
 	                <div class="card" th:classappend="${address.defaultForShipping ? 'bg-warning' : ''}">
@@ -59,7 +63,10 @@
 	                                    <span class="text-danger">[Default]</span>
 	                                </th:block>
 	                                <th:block th:unless="${address.defaultForShipping}">
-	                                    <a th:href="@{'/address_book/default/' + ${address.id}}">[Set as default]</a>
+	                                    <a th:unless="${param.redirect}" th:href="@{'/address_book/default/' + ${address.id}}">[Set as default]</a>
+	                                    <a th:if="${param.redirect}" th:href="@{'/address_book/default/' + ${address.id} + '?redirect=' + ${param.redirect}}">
+	                                        [Set as default]
+	                                    </a>
 	                                </th:block>
 	                                
 	                            </div>

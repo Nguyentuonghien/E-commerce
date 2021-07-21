@@ -66,7 +66,6 @@ public class Category extends IdBasedEntity {
 	 * ta cần có một List<Category> được sao chép để tránh thực hiện thay đổi đối với cơ sở dữ liệu
 	 *
 	 */
-	 
 	public static Category copyFull(Category category) {
 		Category copyCategory = new Category();
 		copyCategory.setId(category.getId());
