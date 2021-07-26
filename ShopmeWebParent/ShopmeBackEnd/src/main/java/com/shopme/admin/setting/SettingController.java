@@ -43,7 +43,6 @@ public class SettingController {
 	/**
 	 * vì ở form general.html, ta không dùng th:object để binding các field của object(mà dung key để set vào name trong input)
 	 * truy cập HttpServletRequest để đọc value của các field trong form 
-	 * 
 	 */
 	@PostMapping("/settings/save_general")
 	public String saveGeneralSettings(@RequestParam("fileImage") MultipartFile multipartFile, RedirectAttributes attributes, 
@@ -77,6 +76,14 @@ public class SettingController {
 		List<Setting> mailTemplateSettings = settingService.getMailTemplateSettings();
 		updateSettingValuesFromForm(servletRequest, mailTemplateSettings);
 		attributes.addFlashAttribute("message", "Mail template settings have been saved.");
+		return "redirect:/settings";
+	}
+	
+	@PostMapping("/settings/save_payment")
+	public String savePaymentSettings(HttpServletRequest request, RedirectAttributes attributes) {
+		List<Setting> paymentSettings = settingService.getPaymentSettings();
+		updateSettingValuesFromForm(request, paymentSettings);
+		attributes.addFlashAttribute("message", "Payment settings have been saved.");
 		return "redirect:/settings";
 	}
 	

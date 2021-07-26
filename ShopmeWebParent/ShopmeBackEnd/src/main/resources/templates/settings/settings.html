@@ -63,6 +63,7 @@
 				</div>
 				
 				<div class="tab-pane p-3" id="payment" role="tabpanel">
+				    <div th:replace="settings/payment :: content"></div>
 				</div>
 			</div>
 		</div>
@@ -87,6 +88,7 @@
 	
 	$(document).ready(function() {
 		$("#customerVerificationContent").richText();
+		$("#orderConfirmationContent").richText();
 	});
 	
 </script>

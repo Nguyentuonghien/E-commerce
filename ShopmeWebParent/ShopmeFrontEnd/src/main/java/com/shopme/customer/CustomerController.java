@@ -88,6 +88,8 @@ public class CustomerController {
 			redirectURL = "redirect:/address_book";
 		} else if (redirectOption.equals("cart")) {
 			redirectURL = "redirect:/cart";
+		} else if (redirectOption.equals("checkout")) {
+			redirectURL = "redirect:/address_book?redirect=checkout";
 		}
 		return redirectURL;
 	}
