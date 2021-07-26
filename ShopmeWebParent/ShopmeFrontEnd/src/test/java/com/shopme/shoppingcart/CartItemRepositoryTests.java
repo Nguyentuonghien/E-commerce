@@ -111,6 +111,15 @@ public class CartItemRepositoryTests {
 		assertThat(item).isNull();
 	}
 	
+	@Test
+	public void testDeleteByCustomer() {
+		Integer customerId = 40;
+		cartItemRepository.deleteByCustomer(customerId);
+		List<CartItem> cartItems = cartItemRepository.findByCustomer(new Customer(customerId));
+		
+		assertThat(cartItems.size()).isEqualTo(0);
+	}
+	
 }
 
 
