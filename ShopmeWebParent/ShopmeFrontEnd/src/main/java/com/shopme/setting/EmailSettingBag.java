@@ -7,11 +7,11 @@ import com.shopme.common.entity.setting.SettingBag;
 
 public class EmailSettingBag extends SettingBag {
 
-	public EmailSettingBag(List<Setting> lisSettings) {
-		super(lisSettings);
+	public EmailSettingBag(List<Setting> listSettings) {
+		super(listSettings);
 	}
 	
-	// get ra các value theo key: MAIL_HOST, MAIL_POST, ...
+	// get ra các value theo key: MAIL_HOST, MAIL_POST, MAIL_USERNAME, ...
 	public String getHost() {
 		return super.getValue("MAIL_HOST");
 	}
@@ -51,5 +51,13 @@ public class EmailSettingBag extends SettingBag {
 	public String getCustomerVerifyContent() {
 		return super.getValue("CUSTOMER_VERIFY_CONTENT");
 	}	
+	
+	public String getOrderConfirmationSubject() {
+		return super.getValue("ORDER_CONFIRMATION_SUBJECT");
+	}
+	
+	public String getOrderConfirmationContent() {
+		return super.getValue("ORDER_CONFIRMATION_CONTENT");
+	}
 	
 }

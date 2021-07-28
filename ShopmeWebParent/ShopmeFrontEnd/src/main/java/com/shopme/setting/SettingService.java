@@ -24,4 +24,9 @@ public class SettingService {
 		return new EmailSettingBag(settings);
 	}
 	
+	public CurrencySettingBag getCurrencySettings() {
+		List<Setting> settings = settingRepository.findByCategory(SettingCategory.CURRENCY);
+		return new CurrencySettingBag(settings);
+	}
+	
 }
