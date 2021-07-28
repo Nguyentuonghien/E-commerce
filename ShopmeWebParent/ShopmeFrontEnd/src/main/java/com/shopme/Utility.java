@@ -1,5 +1,7 @@
 package com.shopme;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -8,13 +10,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import com.shopme.security.oauth.CustomerOAuth2User;
+import com.shopme.setting.CurrencySettingBag;
 import com.shopme.setting.EmailSettingBag;
 
 public class Utility {
 	
-	// trả về context path thực của ứng dụng web(http://localhost/Shopme)
 	public static String getSiteURL(HttpServletRequest request) {
 		String siteURL = request.getRequestURL().toString();
+		// trả về context path thực của ứng dụng web(http://localhost/Shopme)
 		return siteURL.replace(request.getServletPath(), "");
 	}
 	
@@ -35,8 +38,38 @@ public class Utility {
 		return mailSender;
 	}
 	
-	// lấy ra email của customer đã được xác thực, vì có 1 số cách login khác nhau: login = form(có hoặc không dùng remember me) -> trả về email của customer 
-	// còn login = google or facebook sẽ trả về name customer -> từ đối tượng principal ta sẽ cast theo từng trường hợp tương ứng để
+	public static String formatCurrency(float amount, CurrencySettingBag currencySettingBag) {
+		String symbol = currencySettingBag.getSymbol();
+		String symbolPosition = currencySettingBag.getSymbolPosition();
+		String decimalPointType = currencySettingBag.getDecimalPointType();
+		String thousandPointType = currencySettingBag.getThousandPointType();
+		int decimalDigits = currencySettingBag.getDecimalDigits();
+		
+		String pattern = symbolPosition.equals("Before price") ? symbol : "" ;
+		pattern += "###,###";
+		if (decimalDigits > 0) {
+			pattern += ".";
+			for (int count = 1; count <= decimalDigits; count++) {
+				pattern += "#";
+			}
+		}
+		pattern += symbolPosition.equals("After price") ? symbol : "" ;
+		
+		char thousandSeparator = thousandPointType.equals("POINT") ? '.' : ',';
+		char decimalSeparator = decimalPointType.equals("POINT") ? '.' : ',';
+		DecimalFormatSymbols decimalFormatSymbols = DecimalFormatSymbols.getInstance();
+		decimalFormatSymbols.setDecimalSeparator(decimalSeparator);
+		decimalFormatSymbols.setGroupingSeparator(thousandSeparator);
+		
+		DecimalFormat decimalFormat = new DecimalFormat(pattern, decimalFormatSymbols);
+		return decimalFormat.format(amount);
+	}
+	
+	
+	/**
+	 * lấy ra email của customer đã được xác thực, vì có 1 số cách login khác nhau: login = form(có hoặc không dùng remember me) -> trả về email của customer 
+	 * còn login = google or facebook sẽ trả về name customer -> từ đối tượng principal ta sẽ cast theo từng trường hợp tương ứng để
+	 */
 	public static String getEmailOfAuthenticatedCustomer(HttpServletRequest request) {
 		Object principal = request.getUserPrincipal();
 		// customer chưa login -> null
@@ -53,3 +86,5 @@ public class Utility {
 	}
 	
 }
+
+
