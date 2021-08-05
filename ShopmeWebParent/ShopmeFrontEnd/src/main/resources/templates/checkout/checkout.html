@@ -39,6 +39,13 @@
 	                            </p>
                             </form>
                         </div>
+                        
+                        <div id="paypal-button-container"></div>
+					    <form th:action="@{/process_paypal_order}" method="post" id="paypalForm">
+						    <input type="hidden" name="orderId" id="orderId" />
+						    <input type="hidden" name="paymentMethod" value="PAYPAL" />
+					    </form>
+                        
                     </div>
                 </div>
             </div>
@@ -90,10 +97,14 @@
             </div>
         </div>
     
+        <div th:replace="fragments :: modal_dialog"></div>
         <div th:replace="navigation :: footer_menu"></div> 
     </div>    
     
+    <script th:src="@{https://www.paypal.com/sdk/js(client-id=${paypalClientId},currency=${currencyCode})}"></script>
+    <script type="text/javascript" th:src="@{/js/common_modal.js}"></script>
     <script type="text/javascript">
+    
 	    contextPath = "[[@{/}]]";
 	    var csrfHeaderName = "[[${_csrf.headerName}]]";
 	    var csrfValue = "[[${_csrf.token}]]";
@@ -104,7 +115,81 @@
 	    	});
 	    });
 	    
+	    function validateOrder(orderId) {
+			$("#orderId").val(orderId);
+			$("#paypalForm").submit();
+		}
+	    
+	    paypal.Buttons({
+	    	enableStandardCardFields: true,
+	    	createOrder: function(data, actions) {
+	    		// thiết lập một transaction (giao dịch)
+	    		return actions.order.create({
+	    			// thanh toán ngay lập tức
+	    			intent: 'CAPTURE',
+	    			payer: {
+	    				name: {
+		    			given_name: "[[${customer.firstName}]]",
+		    			surname: "[[${customer.lastName}]]"
+	    				},
+	    			
+		    			address: {
+							address_line_1: "[[${customer.addressLine1}]]",
+							address_line_2: "[[${customer.addressLine2}]]",
+							admin_area_1: "OH",
+							// admin_area_1: "[[${customer.state}]]",
+							admin_area_2: "[[${customer.city}]]",
+							postal_code: "[[${customer.postalCode}]]",
+							country_code: "[[${customer.country.code}]]"
+						},
+		    			
+		    			email_address: "[[${customer.email}]]",
+		    			
+						phone: {
+							phone_type: "MOBILE",
+							phone_number: {
+								national_number: "[[${customer.phoneNumber}]]"
+							}
+						}
+	    			},
+	    			
+	    			purchase_units: [{
+						amount: {
+							value: "[[${checkoutInfo.paymentTotal4PayPal}]]",
+							currency_code: "[[${currencyCode}]]"
+						}
+					}],
+					
+					application_context: {
+						shipping_preference: "NO_SHIPPING"
+					}
+	    		});
+	    	},
+	    	
+	    	onApprove: function(data, actions) {
+	    		// người mua chấp thuận thanh toán
+	    		return actions.order.capture().then(function(details) {
+	    			// console.log(details);
+	    			orderId = details.id;
+	    			validateOrder(orderId);
+	    		});
+	    	},
+	    	
+	    	onCancel: function(data) {
+	    		// người mua đã hủy thanh toán
+	    		alert('Payment cancelled by the buyer');
+	    	}, 
+	    	
+	    	onError: function(error) {
+	    		// lỗi ngăn người mua thực hiện thanh toán
+	    		alert('Something wrong happended');
+	    	}
+	    }).render("#paypal-button-container");
+	    
 	</script>
 </body>
 </html>
+
+
+
 

@@ -1,5 +1,6 @@
 package com.shopme.checkout;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -68,6 +69,12 @@ public class CheckoutInfo {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, deliverDays);
 		return calendar.getTime();
+	}
+	
+	// format paymentTotal theo định dạng mà paypal yêu cầu
+	public String getPaymentTotal4PayPal() {
+		DecimalFormat decimalFormat = new DecimalFormat("###,###.##");
+		return decimalFormat.format(paymentTotal);
 	}
 
 }
