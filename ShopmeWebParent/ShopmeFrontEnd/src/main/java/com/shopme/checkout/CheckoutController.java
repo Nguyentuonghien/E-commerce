@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.shopme.Utility;
 import com.shopme.address.AddressService;
+import com.shopme.checkout.paypal.PayPalApiException;
+import com.shopme.checkout.paypal.PayPalService;
 import com.shopme.common.entity.Address;
 import com.shopme.common.entity.CartItem;
 import com.shopme.common.entity.Customer;
@@ -28,6 +30,7 @@ import com.shopme.customer.CustomerService;
 import com.shopme.order.OrderService;
 import com.shopme.setting.CurrencySettingBag;
 import com.shopme.setting.EmailSettingBag;
+import com.shopme.setting.PaymentSettingBag;
 import com.shopme.setting.SettingService;
 import com.shopme.shipping.ShippingRateService;
 import com.shopme.shoppingcart.ShoppingCartService;
@@ -42,6 +45,7 @@ public class CheckoutController {
 	@Autowired private AddressService addressService;	
 	@Autowired private OrderService orderService;
 	@Autowired private SettingService settingService;
+	@Autowired private PayPalService paypalService;
 	
 	@GetMapping("/checkout")
 	public String showCheckoutPage(Model model, HttpServletRequest request) {
@@ -60,8 +64,15 @@ public class CheckoutController {
 		}
 		List<CartItem> listCartItems = shoppingCartService.listCartItems(customer);
 		CheckoutInfo checkoutInfo = checkoutService.prepareCheckout(listCartItems, shippingRate);
+		String currencyCode = settingService.getCurrencyCode();
+		PaymentSettingBag paymentSettingBag = settingService.getPaymentSettings();
+		String paypalClientId = paymentSettingBag.getClientID();
+		
 		model.addAttribute("checkoutInfo", checkoutInfo);
 		model.addAttribute("listCartItems", listCartItems);
+		model.addAttribute("customer", customer);
+		model.addAttribute("currencyCode", currencyCode);
+		model.addAttribute("paypalClientId", paypalClientId);
 		return "checkout/checkout";
 	}
 	
@@ -87,6 +98,30 @@ public class CheckoutController {
 		shoppingCartService.deteleByCustomer(customer);
 		sendOrderConfirmationEmail(request, createdOrder);
 		return "checkout/order_completed";
+	}
+	
+	@PostMapping("/process_paypal_order")
+	public String processPayPalOrder(HttpServletRequest request, Model model) throws UnsupportedEncodingException, MessagingException {
+		// khi giao dịch hoàn thành(customer ấn PayNow) -> PayPal sẽ trả về OrderID và TotalAmount cho checkout.html
+		// ta sẽ lấy ra orderId đó từ checkout page để validating PayPal Order
+        String orderId = request.getParameter("orderId");
+		String pageTitle = "Checkout Failure";
+		String message = null;
+		try {
+			// nếu true -> paypal order đã được verified -> call tới placeOrder() để save order detail vào trong DB và send email xác minh cho customer
+			if (paypalService.validateOrder(orderId)) {
+				return placeOrder(request);
+			} else {
+				pageTitle = "Checkout Failure";
+				message = "ERROR: Transaction could not be completed because order information is invalid";
+			}
+		} catch (PayPalApiException e) {
+			message = "ERROR: Transaction failed due to error: " + e.getMessage();
+		}
+		model.addAttribute("pageTitle", pageTitle);
+		model.addAttribute("title", pageTitle);
+		model.addAttribute("message", message);
+		return "message";
 	}
 	
 	private void sendOrderConfirmationEmail(HttpServletRequest request, Order createdOrder) throws UnsupportedEncodingException, MessagingException {
