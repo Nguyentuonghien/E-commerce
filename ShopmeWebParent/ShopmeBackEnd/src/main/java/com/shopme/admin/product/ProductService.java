@@ -8,11 +8,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.shopme.admin.paging.PagingAndSortingHelper;
 import com.shopme.common.entity.product.Product;
 import com.shopme.common.exception.ProductNotFoundException;
 
@@ -29,26 +28,42 @@ public class ProductService {
 		return (List<Product>) productRepository.findAll();
 	}
 	
-	public Page<Product> listProductsByPage(String keyword, int pageNumber, String sortField, String sortDir, Integer categoryId) {
-		Sort sort = Sort.by(sortField);
-		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-		Pageable pageable = PageRequest.of(pageNumber - 1, PRODUCTS_PER_PAGE, sort);
+	public void listProductsByPage(int pageNumber, PagingAndSortingHelper helper, Integer categoryId) {
+		Pageable pageable = helper.createPageable(pageNumber, PRODUCTS_PER_PAGE);
+		String keyword = helper.getKeyword();
+		Page<Product> page = null;
 		
 		// có search theo keyword và có select products theo category
 		if (keyword != null && !keyword.isEmpty()) {
 			if (categoryId != null && categoryId > 0) {
 				String categoryIdMatch = "-" + String.valueOf(categoryId) + "-";
-				return productRepository.searchInCategory(categoryId, categoryIdMatch, keyword, pageable);
+				page = productRepository.searchInCategory(categoryId, categoryIdMatch, keyword, pageable);
+			} else {
+				page = productRepository.findAllProducts(keyword, pageable); // chỉ search
 			}
-			return productRepository.findAllProducts(keyword, pageable); // chỉ search 
+		} else {
+			// không search theo keyword mà chỉ select products theo category
+			if (categoryId != null && categoryId > 0) {
+				String categoryIdMatch = "-" + String.valueOf(categoryId) + "-";
+				page = productRepository.findAllInCategory(categoryId, categoryIdMatch, pageable);
+			} else {
+				page = productRepository.findAll(pageable);
+			}
 		}
-		// không search theo keyword mà chỉ select products theo category
-		if (categoryId != null && categoryId > 0) {
-			String categoryIdMatch = "-" + String.valueOf(categoryId) + "-";
-			return productRepository.findAllInCategory(categoryId, categoryIdMatch, pageable);
-		}
-		return productRepository.findAll(pageable);
+		helper.updateModelAttributes(pageNumber, page);
  	}
+	
+	public void searchProducts(int pageNumber, PagingAndSortingHelper helper) {
+		Pageable pageable = helper.createPageable(pageNumber, PRODUCTS_PER_PAGE);
+		String keyword = helper.getKeyword();
+		Page<Product> page = null;
+		if (keyword != null && !keyword.isEmpty()) {
+			page = productRepository.searchProductsByName(keyword, pageable);
+		} else {
+		    page =  productRepository.findAll(pageable);
+		}
+		helper.updateModelAttributes(pageNumber, page);
+	}
 	
 	public Product saveProduct(Product product) {
 		if (product.getId() == null) {

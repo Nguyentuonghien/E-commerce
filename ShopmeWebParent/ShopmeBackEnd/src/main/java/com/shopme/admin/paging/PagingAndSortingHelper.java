@@ -16,31 +16,16 @@ public class PagingAndSortingHelper {
 	private String sortDir;
 	private String keyword;
 	
-	public PagingAndSortingHelper(ModelAndViewContainer model, String listName, String sortField, 
-			  String sortDir, String keyword) {
+	public PagingAndSortingHelper(ModelAndViewContainer model, String listName, String sortField, String sortDir, String keyword) {
 		this.model = model;
 		this.listName = listName;
 		this.sortField = sortField;
 		this.sortDir = sortDir;
 		this.keyword = keyword;
 	}
-
-	public String getSortField() {
-		return sortField;
-	}
-
-	public String getSortDir() {
-		return sortDir;
-	}
-
-	public String getKeyword() {
-		return keyword;
-	}
 	
 	public void listEntities(int pageNumber, int pageSize, SearchRepository<?, Integer> repository) {
-		Sort sort = Sort.by(sortField);
-		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+		Pageable pageable = createPageable(pageNumber, pageSize);
 		// nếu search thì sẽ vừa seach+phân trang, nếu k chỉ phân trang
 		Page<?> page = null;
 		if (keyword != null) {
@@ -65,6 +50,25 @@ public class PagingAndSortingHelper {
 		model.addAttribute("totalPages", pages.getTotalPages());
 		model.addAttribute("totalItems", pages.getTotalElements());
 		model.addAttribute(listName, listItems);
+	}
+	
+	public Pageable createPageable(int pageNumber, int pageSize) {
+		Sort sort = Sort.by(sortField);
+		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+		Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
+		return pageable;
+	}
+	
+	public String getSortField() {
+		return sortField;
+	}
+
+	public String getSortDir() {
+		return sortDir;
+	}
+
+	public String getKeyword() {
+		return keyword;
 	}
 	
 }

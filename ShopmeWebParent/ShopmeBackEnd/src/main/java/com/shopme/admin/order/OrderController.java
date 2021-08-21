@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.shopme.admin.paging.PagingAndSortingHelper;
 import com.shopme.admin.paging.PagingAndSortingParam;
 import com.shopme.admin.setting.SettingService;
+import com.shopme.common.entity.Country;
 import com.shopme.common.entity.order.Order;
 import com.shopme.common.entity.setting.Setting;
 
@@ -46,6 +47,21 @@ public class OrderController {
 			loadCurrencySetting(request);
 			model.addAttribute("order", order);
 			return "orders/order_details_modal";
+		} catch (OrderNotFoundException e) {
+			attributes.addFlashAttribute("message", e.getMessage());
+			return defaultRedirectURL;
+		}
+	}
+	
+	@GetMapping("/orders/edit/{id}")
+	public String editOrder(@PathVariable("id") Integer id, Model model, RedirectAttributes attributes) {
+		try {
+			Order order = orderService.getOrder(id);
+			List<Country> listCountries = orderService.listAllCountries();
+			model.addAttribute("listCountries", listCountries);
+			model.addAttribute("order", order);
+			model.addAttribute("pageTitle", "Edit Order (ID:" + id + ")");
+			return "orders/order_form";
 		} catch (OrderNotFoundException e) {
 			attributes.addFlashAttribute("message", e.getMessage());
 			return defaultRedirectURL;

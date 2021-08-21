@@ -18,18 +18,19 @@ public class PagingAndSortingArgumentResolver implements HandlerMethodArgumentRe
 	 * method resolveArgument(): sẽ được Spring MVC gọi khi @PagingAndSortingParam được sử dụng trong controller khi xử lý method
 	 */
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer model, 
-			                 NativeWebRequest request, WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer model, NativeWebRequest request, WebDataBinderFactory binderFactory) 
+			                      throws Exception {
 		
 		PagingAndSortingParam annotation = parameter.getParameterAnnotation(PagingAndSortingParam.class);
 		// read value của các field và set vào trong model
 		String sortDir = request.getParameter("sortDir");
 		String sortField = request.getParameter("sortField");
 		String keyword = request.getParameter("keyword");
+		
 		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
+		model.addAttribute("reverseSortDir", reverseSortDir);	
 		model.addAttribute("sortField", sortField);
 		model.addAttribute("sortDir", sortDir);
-		model.addAttribute("reverseSortDir", reverseSortDir);	
 		model.addAttribute("keyword", keyword);
 		// annotation.listName(), annotation.moduleURL(): lấy ra các giá trị của moduleURL, listName của @PagingAndSortingParam được truyền vào từ controller
 		model.addAttribute("moduleURL", annotation.moduleURL());

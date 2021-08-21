@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		    .antMatchers("/products", "/products/", "/products/detail/**", "/products/page/**")
 		              .hasAnyAuthority("Admin", "Editor", "Salesperson", "Shipper")         
 		    .antMatchers("/products/**").hasAnyAuthority("Admin", "Editor")
-		    .antMatchers("/customers/**", "/shipping_rates/**", "/orders/**").hasAnyAuthority("Admin", "Salesperson")
+		    .antMatchers("/customers/**", "/shipping_rates/**", "/orders/**", "/get_shipping_cost").hasAnyAuthority("Admin", "Salesperson")
 		    .anyRequest().authenticated()
 		    .and()
 		    .formLogin()
@@ -69,6 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		    .and()
 		        .rememberMe().key("AbcDefgHijKlmnOpqrs_1234567890")   // key(): xác định key để mã hóa cookie được ghi ở browser
 		        .tokenValiditySeconds(7 * 24 * 60 * 60);              // tokenValiditySeconds(): sẽ xác định thời gian tồn tại cookies(7 days)
+		http.headers().frameOptions().sameOrigin();    // cho phép load iframe của cùng một trang web                   
 	}
 	
 	@Override
