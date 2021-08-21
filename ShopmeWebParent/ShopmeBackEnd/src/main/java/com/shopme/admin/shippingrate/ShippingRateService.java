@@ -7,9 +7,11 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shopme.admin.paging.PagingAndSortingHelper;
+import com.shopme.admin.product.ProductRepository;
 import com.shopme.admin.setting.country.CountryRepository;
 import com.shopme.common.entity.Country;
 import com.shopme.common.entity.ShippingRate;
+import com.shopme.common.entity.product.Product;
 
 @Service
 @Transactional
@@ -17,11 +19,13 @@ public class ShippingRateService {
 	
 	public static final int SHIPPINGRATE_PER_PAGE = 10;
 	
-	@Autowired
-	private ShippingRateRepository shippingRateRepository;
+	public static final int DIM_DIVISOR = 139;
 	
-	@Autowired
-	private CountryRepository countryRepository;
+	@Autowired private ShippingRateRepository shippingRateRepository;
+	
+	@Autowired private CountryRepository countryRepository;
+	
+	@Autowired private ProductRepository productRepository;
 	
 	public void listByPage(int pageNumber, PagingAndSortingHelper helper) {
 		helper.listEntities(pageNumber, SHIPPINGRATE_PER_PAGE, shippingRateRepository);
@@ -70,6 +74,17 @@ public class ShippingRateService {
 			throw new ShippingRateNotFoundException("Could not find any shipping rate with ID: " + id);
 		}
 		shippingRateRepository.deleteById(id);
+	}
+	
+	public float calculateShippingCost(Integer productId, Integer countryId, String state) throws ShippingRateNotFoundException {
+		ShippingRate shippingRate = shippingRateRepository.findByCountryAndState(countryId, state);
+		if (shippingRate == null) {
+			throw new ShippingRateNotFoundException("No shipping rate found for the given destination. You have to enter shipping cost manually.");
+		}
+		Product product = productRepository.findById(productId).get();
+		float dimWeight = (product.getLength() * product.getWidth() * product.getHeight()) / DIM_DIVISOR;
+		float finalWeight = product.getWeight() > dimWeight ? product.getWeight() : dimWeight;
+		return finalWeight * shippingRate.getRate();
 	}
 	
 }

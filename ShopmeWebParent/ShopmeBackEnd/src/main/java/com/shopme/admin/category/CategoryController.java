@@ -34,8 +34,8 @@ public class CategoryController {
 	
 	@GetMapping("/categories/page/{pageNumber}")
 	public String listByPage(@PathVariable("pageNumber") int pageNumber, Model model, 
-			                 @Param("sortDir") String sortDir, 
-			                 @Param("keyword") String keyword) {
+			                 @RequestParam("sortDir") String sortDir, 
+			                 @RequestParam("keyword") String keyword) {
 		if(sortDir == null || sortDir.isEmpty()) {
 			sortDir = "asc";
 		}

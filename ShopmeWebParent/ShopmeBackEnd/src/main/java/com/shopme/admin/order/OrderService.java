@@ -1,5 +1,6 @@
 package com.shopme.admin.order;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.shopme.admin.paging.PagingAndSortingHelper;
+import com.shopme.admin.setting.country.CountryRepository;
+import com.shopme.common.entity.Country;
 import com.shopme.common.entity.order.Order;
 
 @Service
@@ -18,6 +21,9 @@ public class OrderService {
 	
 	@Autowired
 	private OrderRepository orderRepository;
+	
+	@Autowired
+	private CountryRepository countryRepository;
 	
 	// vì ta phải sortField cho destination 3 lần -> phải custom lại hàm listByPage()
 	public void listByPage(int pageNumber, PagingAndSortingHelper helper) {
@@ -57,6 +63,10 @@ public class OrderService {
 			throw new OrderNotFoundException("Could not find any orders with id: " + id);
 		}
 		orderRepository.deleteById(id);
+	}
+	
+	public List<Country> listAllCountries() {
+		return countryRepository.findAllByOrderByNameAsc(); 
 	}
 	
 }

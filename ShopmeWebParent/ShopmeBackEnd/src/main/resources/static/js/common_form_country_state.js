@@ -14,6 +14,7 @@ $(document).ready(function() {
 	loadStates4Country();
 });
 
+// load state theo country 
 function loadStates4Country() {
 	selectedCountry = $("#country option:selected");
 	countryId = selectedCountry.val();
@@ -30,4 +31,11 @@ function loadStates4Country() {
 	}).fail(function() {
 		showErrorModal("Error loading states/provinces for the selected country.");
 	})	
+		
 }	
+
+
+
+
+
+

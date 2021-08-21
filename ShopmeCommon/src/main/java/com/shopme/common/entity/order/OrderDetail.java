@@ -24,6 +24,7 @@ public class OrderDetail extends IdBasedEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "product_id")
+	// 1 product co the o trong 1 or nhieu orderDetail
 	private Product product;
 
 	public int getQuantity() {

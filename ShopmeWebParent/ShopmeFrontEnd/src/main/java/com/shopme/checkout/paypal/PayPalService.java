@@ -40,7 +40,7 @@ public class PayPalService {
 	private ResponseEntity<PayPalOrderResponse> makeRequest(String orderId) {
 		PaymentSettingBag paymentSettings = settingService.getPaymentSettings();
 		String baseURL = paymentSettings.getURL();
-		// https://api-m.sandbox.paypal.com/v2/checkout/orders/6JE21257UJ2471114
+		// requestURL có dạng: https://api-m.sandbox.paypal.com/v2/checkout/orders/6JE21257UJ2471114
 		String requestURL = baseURL + GET_ORDER_API + orderId;
 		String clientId = paymentSettings.getClientID();
 		String clientSecret = paymentSettings.getClientSecret();

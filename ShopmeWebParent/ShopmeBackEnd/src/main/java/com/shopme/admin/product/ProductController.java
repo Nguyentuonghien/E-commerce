@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.shopme.admin.FileUploadUtil;
 import com.shopme.admin.brand.BrandService;
 import com.shopme.admin.category.CategoryService;
+import com.shopme.admin.paging.PagingAndSortingHelper;
+import com.shopme.admin.paging.PagingAndSortingParam;
 import com.shopme.admin.security.ShopmeUserDetails;
 import com.shopme.common.entity.Brand;
 import com.shopme.common.entity.Category;
@@ -27,6 +27,8 @@ import com.shopme.common.exception.ProductNotFoundException;
 
 @Controller
 public class ProductController {
+	
+	private String defaultRedirectURL = "redirect:/products/page/1?sortField=name&sortDir=asc&categoryId=0";
 	
 	@Autowired
 	private ProductService productService;
@@ -39,41 +41,18 @@ public class ProductController {
 	
 	@GetMapping("/products")
 	public String listFirstPage(Model model) {
-		return listByPage(model, 1, "name", "asc", null, 0);
+		return defaultRedirectURL;
 	}
 	
 	@GetMapping("/products/page/{pageNumber}")
-	public String listByPage(Model model, @PathVariable("pageNumber") int pageNumber, 
-			        @Param("sortField") String sortField, 
-			        @Param("sortDir") String sortDir, 
-			        @Param("keyword") String keyword,
-	                @Param("categoryId") Integer categoryId) {
-		Page<Product> page = productService.listProductsByPage(keyword, pageNumber, sortField, sortDir, categoryId);
-		List<Product> products = page.getContent();		
+	public String listByPage(@PagingAndSortingParam(listName = "listProducts", moduleURL = "/products") PagingAndSortingHelper helper,
+			                 @PathVariable(name = "pageNumber") int pageNumber, Model model, Integer categoryId) {
+		productService.listProductsByPage(pageNumber, helper, categoryId);
 		List<Category> listCategories = categoryService.listCategoriesUsedInForm();
-		
-		long startCount = (pageNumber - 1) * ProductService.PRODUCTS_PER_PAGE + 1;
-		long endCount = startCount + ProductService.PRODUCTS_PER_PAGE - 1;
-		if (endCount > page.getTotalElements()) {
-			endCount = page.getTotalElements();
-		}
-		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";					
 		if (categoryId != null) {
 			model.addAttribute("categoryId", categoryId);
 		}
-		
-		model.addAttribute("products", products);
 		model.addAttribute("listCategories", listCategories);
-		model.addAttribute("currentPage", pageNumber);
-		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortDir", sortDir);
-		model.addAttribute("keyword", keyword);
-		model.addAttribute("startCount", startCount);
-		model.addAttribute("endCount", endCount);
-		model.addAttribute("totalItems", page.getTotalElements());
-		model.addAttribute("totalPages", page.getTotalPages());
-		model.addAttribute("reverseSortDir", reverseSortDir);
-		model.addAttribute("moduleURL", "/products");
 		return "products/products";
 	}
 
