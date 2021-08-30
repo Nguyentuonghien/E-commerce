@@ -49,6 +49,14 @@ public class OrderService {
 		helper.updateModelAttributes(pageNumber, page);
 	}
 	
+	public void save(Order orderInform) {
+		Order orderInDB = orderRepository.findById(orderInform.getId()).get();
+		// orderTime và customer k xuất hiện trong form html -> phải set từ DB cho orderForm
+		orderInform.setOrderTime(orderInDB.getOrderTime());
+		orderInform.setCustomer(orderInDB.getCustomer());
+		orderRepository.save(orderInform);
+	}
+	
 	public Order getOrder(Integer id) throws OrderNotFoundException {
 		try {
 			return orderRepository.findById(id).get();

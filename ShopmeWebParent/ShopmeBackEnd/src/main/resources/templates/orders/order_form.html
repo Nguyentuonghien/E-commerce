@@ -9,7 +9,7 @@
 			<h2>Manage Orders | [[${pageTitle}]]</h2>
 		</div>
 
-		<form th:action="@{/order/save}" th:object="${order}" method="post" onsubmit="return processFormBeforeSubmit();">
+		<form th:action="@{/orders/save}" th:object="${order}" method="post" onsubmit="return processFormBeforeSubmit();">
 			<input type="hidden" th:field="*{id}" />
 			<div>
 				<ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -40,7 +40,7 @@
 					</div>
 
 					<div class="tab-pane fade p-3" id="track" role="tabpanel">
-						<h2>Edit Order Tracking</h2>
+						<div th:replace="orders/order_form_track:: content"></div>
 					</div>
 				</div>
 			</div>
@@ -75,6 +75,7 @@
 	<script th:src="@{/js/order_form_overview_products.js}"></script>
 	<script th:src="@{/js/order_form_add_product.js}"></script>
 	<script th:src="@{/js/order_form_remove_product.js}"></script>
+	<script th:src="@{/js/order_form_tracks.js}"></script>
 </body>
 </html>
 

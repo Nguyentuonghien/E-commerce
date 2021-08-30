@@ -6,6 +6,7 @@
 		
 		    <th:block th:each="detail, status : ${order.orderDetails}">
 		        <div class="border rounded p-1" th:id="'row' + ${status.count}">
+		            <input type="hidden" name="detailId" th:value="${detail.id}" />
 		            <input type="hidden" name="productId" th:value="${detail.product.id}" class="hiddenProductId" />
 		            
 		            <div class="row">
@@ -26,7 +27,7 @@
 		                        <td>Product Cost:</td>
 		                        <td>
 		                            <input type="text" th:value="${detail.productCost}" required 
-		                                   th:rowNumber="${status.count}" 
+		                                   name="productDetailCost" th:rowNumber="${status.count}" 
 		                                   class="form-control m-1 cost-input" style="max-width: 140px" />
 		                        </td>
 		                    </tr>
@@ -34,7 +35,7 @@
 		                        <td>Quantity:</td>
 		                        <td>
 		                            <input type="number" step="1" min="1" max="5" th:value="${detail.quantity}" 
-		                                   th:rowNumber="${status.count}" 
+		                                   name="quantity" th:rowNumber="${status.count}" 
 		                                   th:id="'quantity' + ${status.count}" 
 		                                   required class="form-control m-1 quantity-input" style="max-width: 140px" />
 		                        </td>
@@ -43,7 +44,7 @@
 		                        <td>Unit Price:</td>
 		                        <td>
 		                            <input type="text" th:value="${detail.unitPrice}"  
-		                                   th:rowNumber="${status.count}" 
+		                                   name="productPrice" th:rowNumber="${status.count}" 
 		                                   th:id="'price' + ${status.count}" required
 		                                   class="form-control m-1 price-input" style="max-width: 140px" />
 		                        </td>
@@ -52,7 +53,7 @@
 		                        <td>Subtotal:</td>
 		                        <td>
 		                            <input type="text" th:value="${detail.subtotal}" readonly="readonly"
-		                                   th:id="'subtotal' + ${status.count}"
+		                                   name="productSubtotal" th:id="'subtotal' + ${status.count}"
 		                                   class="form-control m-1 subtotal-output" style="max-width: 140px" />
 		                        </td>
 		                    </tr>
@@ -60,7 +61,7 @@
 		                        <td>Shipping Cost:</td>
 		                        <td>
 		                            <input type="text" th:value="${detail.shippingCost}" required 
-		                                   class="form-control m-1 ship-input" style="max-width: 140px" />
+		                                   name="productShipCost" class="form-control m-1 ship-input" style="max-width: 140px" />
 		                        </td>
 		                    </tr>
 		                </table>
