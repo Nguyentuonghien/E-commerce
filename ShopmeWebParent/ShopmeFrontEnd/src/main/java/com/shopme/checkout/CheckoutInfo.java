@@ -73,7 +73,8 @@ public class CheckoutInfo {
 	
 	// format paymentTotal theo định dạng mà paypal yêu cầu
 	public String getPaymentTotal4PayPal() {
-		DecimalFormat decimalFormat = new DecimalFormat("###,###.##");
+		// mẫu này chỉ bao gồm dấu phân tách phần thập phân (không chứa phân tách phần nghìn)
+		DecimalFormat decimalFormat = new DecimalFormat("##.##");
 		return decimalFormat.format(paymentTotal);
 	}
 

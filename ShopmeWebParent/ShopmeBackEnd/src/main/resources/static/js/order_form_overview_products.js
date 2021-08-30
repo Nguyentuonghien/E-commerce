@@ -140,4 +140,48 @@ function formatNumberForField(fieldRef) {
 	fieldRef.val($.number(fieldRef.val(), 2));
 }
 
+function processFormBeforeSubmit() {
+
+    setCountryName();
+
+    // xóa thousand-separator của 5 fields trong form overview
+    removeThousandSeparatorForField(fieldProductCost);
+    removeThousandSeparatorForField(fieldSubtotal);
+    removeThousandSeparatorForField(fieldShippingCost);
+    removeThousandSeparatorForField(fieldTax);
+    removeThousandSeparatorForField(fieldTotal);
+    
+    // xóa thousand-separator của 4 fields trong form products
+    $(".cost-input").each(function(e) {
+        removeThousandSeparatorForField($(this));
+    });
+    $(".price-input").each(function(e) {
+        removeThousandSeparatorForField($(this));
+    });
+    $(".subtotal-output").each(function(e) {
+        removeThousandSeparatorForField($(this));
+    });
+    $(".ship-input").each(function(e) {
+        removeThousandSeparatorForField($(this));
+    });
+}
+
+function removeThousandSeparatorForField(fieldRef) {
+    fieldRef.val(fieldRef.val().replace(",", ""));
+}
+
+function setCountryName() {
+    selectedCountry = $("#country option:selected");
+    countryName = selectedCountry.text();
+    // gán tên country được chọn cho countryName
+    $("#countryName").val(countryName);
+}
+
+
+
+
+
+
+
+
 

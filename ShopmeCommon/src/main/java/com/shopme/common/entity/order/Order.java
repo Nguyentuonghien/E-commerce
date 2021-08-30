@@ -1,5 +1,6 @@
 package com.shopme.common.entity.order;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,10 +50,10 @@ public class Order extends AbstractAddress {
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<OrderDetail> orderDetails = new HashSet<>();
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("updatedTime ASC")  // sort field updatedTime của OrderTrack tăng dần
 	private List<OrderTrack> orderTracks = new ArrayList<>();
 	
@@ -239,4 +240,14 @@ public class Order extends AbstractAddress {
 		return dateFormat.format(deliverDate);
 	}
 	
+	public void setDeliverDateOnForm(String dateString) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			deliverDate = dateFormat.parse(dateString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
+
