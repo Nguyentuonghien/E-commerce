@@ -7,15 +7,19 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.shopme.admin.paging.PagingAndSortingHelper;
 import com.shopme.admin.paging.PagingAndSortingParam;
+import com.shopme.admin.security.ShopmeUserDetails;
 import com.shopme.admin.setting.SettingService;
 import com.shopme.common.entity.Country;
 import com.shopme.common.entity.order.Order;
@@ -28,13 +32,12 @@ import com.shopme.common.entity.setting.Setting;
 @Controller
 public class OrderController {
 	
-	private String defaultRedirectURL = "redirect:/orders/page/1?sortField=orderTime&sortDir=desc";  
+	// mặc định sort theo orderTime giảm dần
+    private String defaultRedirectURL = "redirect:/orders/page/1?sortField=orderTime&sortDir=desc";  
 	
-	@Autowired
-	private OrderService orderService;
+	@Autowired private OrderService orderService;
 	
-	@Autowired
-	private SettingService settingService;
+	@Autowired private SettingService settingService;
 	
 	@GetMapping("/orders")
 	public String listFirstPage() {
@@ -43,9 +46,14 @@ public class OrderController {
 	
 	@GetMapping("/orders/page/{pageNumber}")
 	public String listByPage(@PathVariable("pageNumber") int pageNumber, HttpServletRequest request, 
-			                 @PagingAndSortingParam(listName = "listOrders", moduleURL = "/orders") PagingAndSortingHelper helper) {
+			                 @PagingAndSortingParam(listName = "listOrders", moduleURL = "/orders") PagingAndSortingHelper helper,
+			                 @AuthenticationPrincipal ShopmeUserDetails loggedUser) {
 		orderService.listByPage(pageNumber, helper);
 		loadCurrencySetting(request);
+		// user đã login mà chỉ có role là "shipper"
+		if (loggedUser.hasRole("Shipper") && !loggedUser.hasRole("Admin") && !loggedUser.hasRole("Salesperson")) {
+			return "orders/orders_shipper";
+		}
 		return "orders/orders";
 	}
 	
@@ -62,11 +70,16 @@ public class OrderController {
 	}
 
 	@GetMapping("/orders/detail/{id}")
-	public String viewOrderDetails(@PathVariable("id") Integer id, Model model, 
-			         HttpServletRequest request, RedirectAttributes attributes) {
+	public String viewOrderDetails(@PathVariable("id") Integer id, Model model, HttpServletRequest request, 
+			            @AuthenticationPrincipal ShopmeUserDetails loggedUser, RedirectAttributes attributes) {
 		try {
 			Order order = orderService.getOrder(id);
 			loadCurrencySetting(request);
+			boolean isVisibleForAdminOrSalesperson = false;
+			if (loggedUser.hasRole("Admin") || loggedUser.hasRole("Salesperson")) {
+				isVisibleForAdminOrSalesperson = true;
+			}
+			model.addAttribute("isVisibleForAdminOrSalesperson", isVisibleForAdminOrSalesperson);
 			model.addAttribute("order", order);
 			return "orders/order_details_modal";
 		} catch (OrderNotFoundException e) {
@@ -104,7 +117,7 @@ public class OrderController {
 	private void loadCurrencySetting(HttpServletRequest request) {
 		List<Setting> listSettings = settingService.getCurrencySetting();
 		for (Setting setting : listSettings) {
-			// put (key và value) vào trong request
+			// put key và value vào trong request để gửi qua view(order.html,...)
 			request.setAttribute(setting.getKey(), setting.getValue());
 			System.out.println(setting.getKey() + ", " + setting.getValue());
 		}
@@ -165,8 +178,5 @@ public class OrderController {
 	}
 	
 }
-
-
-
 
 

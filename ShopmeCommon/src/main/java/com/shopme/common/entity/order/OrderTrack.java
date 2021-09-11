@@ -21,12 +21,12 @@ public class OrderTrack extends IdBasedEntity {
 
 	@Column(length = 256)
 	private String notes;
-
-	private Date updatedTime;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "order_status", length = 45, nullable = false)
 	private OrderStatus orderStatus;
+	
+	private Date updatedTime;
 
 	@ManyToOne
 	@JoinColumn(name = "order_id")

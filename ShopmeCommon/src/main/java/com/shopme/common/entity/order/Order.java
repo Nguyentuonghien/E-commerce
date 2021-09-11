@@ -202,6 +202,7 @@ public class Order extends AbstractAddress {
 	@Transient
 	public String getDestination() {
 		String destination = city + ", ";
+		// vì state có thể null 
 		if (state != null && !state.isEmpty()) {
 			destination += state + ", ";
 		}
@@ -249,5 +250,71 @@ public class Order extends AbstractAddress {
 		}
 	}
 	
+	@Transient
+	public String getRecipientName() {
+		String recipientName = firstName;
+		if (lastName != null && !lastName.isEmpty()) {
+			recipientName += " " + lastName;
+		}
+		return recipientName;
+	}
+	
+	@Transient
+	public String getRecipientAddress() {
+		String address = addressLine1;
+		if (addressLine2 != null && !addressLine2.isEmpty()) {
+			address += ", " + addressLine2;
+		}
+		if (!city.isEmpty()) {
+			address += ", " + city;
+		}
+		if (state != null && !state.isEmpty()) {
+			address += ", " + state;
+		}
+		address += ", " + country;
+		if (!postalCode.isEmpty()) {
+			address += ". " + postalCode;
+		}
+		return address;
+	}
+	
+	@Transient
+	public boolean isCOD() {
+		return paymentMethod.equals(PaymentMethod.COD);
+	}
+	
+	@Transient
+	public boolean isPicked() {
+		return hasStatus(OrderStatus.PICKED);
+	}
+	
+	@Transient
+	public boolean isShipping() {
+		return hasStatus(OrderStatus.SHIPPING);
+	}
+	
+	@Transient
+	public boolean isReturned() {
+		return hasStatus(OrderStatus.RETURNED);
+	}
+	
+	@Transient
+	public boolean isDelivered() {
+		return hasStatus(OrderStatus.DELIVERED);
+	}
+	
+	public boolean hasStatus(OrderStatus orderStatus) {
+		for (OrderTrack orderTrack : orderTracks) {
+			if (orderTrack.getOrderStatus().equals(orderStatus)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }
+
+
+
+
 

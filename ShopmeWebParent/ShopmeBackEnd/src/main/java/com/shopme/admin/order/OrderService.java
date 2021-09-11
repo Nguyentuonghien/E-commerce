@@ -1,5 +1,6 @@
 package com.shopme.admin.order;
 
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -9,30 +10,29 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import com.shopme.admin.paging.PagingAndSortingHelper;
 import com.shopme.admin.setting.country.CountryRepository;
 import com.shopme.common.entity.Country;
 import com.shopme.common.entity.order.Order;
+import com.shopme.common.entity.order.OrderStatus;
+import com.shopme.common.entity.order.OrderTrack;
 
 @Service
 public class OrderService {
 	
-	private static final int ORDERS_PER_PAGE = 10;
+	public static final int ORDERS_PER_PAGE = 10;
 	
-	@Autowired
-	private OrderRepository orderRepository;
+	@Autowired private OrderRepository orderRepository;
 	
-	@Autowired
-	private CountryRepository countryRepository;
+	@Autowired private CountryRepository countryRepository;
 	
-	// vì ta phải sortField cho destination 3 lần -> phải custom lại hàm listByPage()
 	public void listByPage(int pageNumber, PagingAndSortingHelper helper) {
 		String sortField = helper.getSortField();
 		String sortDir = helper.getSortDir();
 		String keyword = helper.getKeyword();
 		Sort sort = null;
-		
-		// nếu sortField là destination chứa country,city,state -> sort lần lượt theo thứ tự country->state->city
+		// nếu sortField là trường destination(chứa country,city,state) -> sort lần lượt theo thứ tự country->state->city
 		if (sortField.equals("destination")) {
 			sort = Sort.by("country").and(Sort.by("state")).and(Sort.by("city"));
 		} else {
@@ -49,35 +49,53 @@ public class OrderService {
 		helper.updateModelAttributes(pageNumber, page);
 	}
 	
-	public void save(Order orderInform) {
-		Order orderInDB = orderRepository.findById(orderInform.getId()).get();
+	public void save(Order orderInForm) {
+		Order orderInDB = orderRepository.findById(orderInForm.getId()).get();
 		// orderTime và customer k xuất hiện trong form html -> phải set từ DB cho orderForm
-		orderInform.setOrderTime(orderInDB.getOrderTime());
-		orderInform.setCustomer(orderInDB.getCustomer());
-		orderRepository.save(orderInform);
+		orderInForm.setOrderTime(orderInDB.getOrderTime());
+		orderInForm.setCustomer(orderInDB.getCustomer());
+		orderRepository.save(orderInForm);
 	}
 	
 	public Order getOrder(Integer id) throws OrderNotFoundException {
 		try {
-			return orderRepository.findById(id).get();
+		    return orderRepository.findById(id).get();
 		} catch (NoSuchElementException e) {
 			throw new OrderNotFoundException("Could not find any orders with ID: " + id);
+		}    
+	}
+	
+	public void updateStatus(Integer orderId, String status) {
+		Order orderInDB = orderRepository.findById(orderId).get();
+		// convert status từ string thành enum sau đó check trong list OrderStatus của Order xem
+		// đã có status truyền vào chưa, nếu chưa -> set status đó cho Order và OrderTrack
+		OrderStatus statusToUpdate = OrderStatus.valueOf(status);
+		if (!orderInDB.hasStatus(statusToUpdate)) {
+			List<OrderTrack> listOrderTracks = orderInDB.getOrderTracks();
+			OrderTrack orderTrack = new OrderTrack();
+			orderTrack.setOrder(orderInDB);
+			orderTrack.setOrderStatus(statusToUpdate);
+			orderTrack.setUpdatedTime(new Date());
+			orderTrack.setNotes(statusToUpdate.defaultDescription());
+			listOrderTracks.add(orderTrack);
+			
+			orderInDB.setStatus(statusToUpdate);
+			orderRepository.save(orderInDB);
 		}
 	}
 	
 	public void deleteOrder(Integer id) throws OrderNotFoundException {
 		Long countById = orderRepository.countById(id);
 		if (countById == null || countById == 0) {
-			throw new OrderNotFoundException("Could not find any orders with id: " + id);
+			throw new OrderNotFoundException("Could not find any orders with ID: " + id);
 		}
 		orderRepository.deleteById(id);
 	}
 	
 	public List<Country> listAllCountries() {
-		return countryRepository.findAllByOrderByNameAsc(); 
+		return countryRepository.findAllByOrderByNameAsc();
 	}
 	
 }
-
 
 

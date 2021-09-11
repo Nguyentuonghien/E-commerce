@@ -26,7 +26,7 @@ public class PagingAndSortingHelper {
 	
 	public void listEntities(int pageNumber, int pageSize, SearchRepository<?, Integer> repository) {
 		Pageable pageable = createPageable(pageNumber, pageSize);
-		// nếu search thì sẽ vừa seach+phân trang, nếu k chỉ phân trang
+		// nếu search thì sẽ vừa seach + phân trang, nếu k chỉ phân trang
 		Page<?> page = null;
 		if (keyword != null) {
 			page = repository.findAll(keyword, pageable);
@@ -36,6 +36,7 @@ public class PagingAndSortingHelper {
 		updateModelAttributes(pageNumber, page);
 	}
 	
+	// gửi các fields từ Page sang phía frontend
 	public void updateModelAttributes(int pageNumber, Page<?> pages) {
         List<?> listItems = pages.getContent();
 		int pageSize = pages.getSize();
