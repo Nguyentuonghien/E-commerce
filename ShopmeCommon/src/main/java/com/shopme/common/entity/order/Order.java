@@ -303,6 +303,16 @@ public class Order extends AbstractAddress {
 		return hasStatus(OrderStatus.DELIVERED);
 	}
 	
+	@Transient
+	public boolean isReturnRequested() {
+		return hasStatus(OrderStatus.RETURN_REQUESTED);
+	}
+	
+	@Transient
+	public boolean isProcessing() {
+		return hasStatus(OrderStatus.PROCESSING);
+	}
+	
 	public boolean hasStatus(OrderStatus orderStatus) {
 		for (OrderTrack orderTrack : orderTracks) {
 			if (orderTrack.getOrderStatus().equals(orderStatus)) {
@@ -310,6 +320,18 @@ public class Order extends AbstractAddress {
 			}
 		}
 		return false;
+	}
+	
+	@Transient
+	public String getProductNames() {
+		// trong phần Products sẽ liệt kê toàn bộ tên của các product trong order đó
+		String productNames = "";
+		productNames = "<ul>";
+		for (OrderDetail orderDetail : orderDetails) {
+			productNames += "<li>" + orderDetail.getProduct().getShortName() + "</li>";
+		}
+		productNames += "</ul>";
+		return productNames;
 	}
 	
 }
